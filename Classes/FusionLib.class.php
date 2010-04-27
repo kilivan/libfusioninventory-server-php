@@ -97,17 +97,57 @@ class FusionLib
     {
         $this->_init();
 		
+		// TODO: file reception
 		try {
 		    $req = simplexml_load_file("data/aofr.ocs");
 		} catch (Exception $e){
 			echo 'Exception : ',  $e->getMessage(), "\n";
 		}
 		
-		
-		
-		
-		
+		if ($this->_isMachineExist($req))
+		{
+			echo " machine exists";
+		} else {
+			echo " machine doesn't exist";
+		}
+
     }
+	
+	
+	/**
+   * We looks for the machine with the relevant criterias defined by user, if it doesn't exist, return false; else return true.
+   * @param $req SimpleXml object
+   * @return $bool boolean
+   */
+	private function _isMachineExist($simpleXMLObj)
+	{
+		foreach($this->_configs["criterias"] as $criteria)
+		{
+			switch($criteria){
+				case "asset tag":
+				if ($simpleXMLObj->CONTENT->BIOS->ASSETTAG)
+				{
+					if (file_exists($configs["storageLocation"]."/"."assettag"."/".$simpleXMLObj->CONTENT->BIOS->ASSETTAG))
+					{
+						continue;
+					} else {
+						return false;
+					}
+				}
+				break;
+				case "motherboard serial":
+				if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+				{
+					var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+				}
+				break;
+				
+				
+			}
+		}
+		
+		return true;
+	}
 	
 
 }

@@ -1,12 +1,21 @@
 <?php
+require_once "machine.class.php";
+require_once "section.class.php";
+require_once "hooks.class.php";
+
 class FusionLib
 {
+	
 	protected static $_instance;
 	
 	private $_configs;
 	
+	private $_machine;
+	private $_section;
+	
 	/**
      * Disable instance
+	 * @access private
      */
 	private function __construct()
 	{
@@ -29,6 +38,15 @@ class FusionLib
         return self::$_instance;
 		
     }
+	
+	/**
+     * Initialization
+     */
+	private function _init()
+    {
+		$this->_machine = new Machine();
+		$this->_section = new Section();		
+    }
     
 	/**
 	* Configs :
@@ -41,7 +59,7 @@ class FusionLib
 	*/
 	public function setConfigs($configs)
     {
-        if(isset($configs["storageEngine"] && $configs["storageLocation"] && $configs["applicationName"] && $configs["criterias"])){
+        if(isset($configs["storageEngine"], $configs["storageLocation"], $configs["applicationName"], $configs["criterias"])){
 			
 			if (!(in_array($configs["storageEngine"], array("directory", "database"))))
 			{
@@ -75,47 +93,23 @@ class FusionLib
 
     }
 	
-	public static function start()
+	public function start()
     {
-        // TODO
+        $this->_init();
+		
+		try {
+		    $req = simplexml_load_file("data/aofr.ocs");
+		} catch (Exception $e){
+			echo 'Exception : ',  $e->getMessage(), "\n";
+		}
+		
+		
+		
+		
+		
     }
 	
 
 }
 
-class Inventory
-{
-	public function CreateMachine()
-	{
-		// TODO
-	}
-}
-
-
-class Machine
-{
-
-	public function __construct($idExternal)
-	{
-		// TODO
-	}
-	
-	public function AddSection()
-	{
-		// TODO
-	}
-	
-	public function RemoveSection()
-	{
-		// TODO
-	}
-}
-
-class Section
-{
-	
-	public $name;
-	public $value;
-	
-}
 ?>

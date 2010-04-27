@@ -33,9 +33,9 @@ class Hooks implements IExistingHooks
      * @access public
      * @return int $externalId Id to match application data with the library
      */
-	public static function createMachine()
+	public static function createMachine();
 	{
-		echo "machine created";
+		return false;
 	}
 	
 	/**
@@ -46,9 +46,9 @@ class Hooks implements IExistingHooks
      * @param array $dataSection
      * @return int $sectionId
 	 */
-	public static function addSection($externalId, $sectionName, $dataSection)
+	public static function addSection($externalId, $sectionName, $dataSection);
 	{
-		echo "section created";
+		return false;
 	}
 	
 	/**
@@ -58,9 +58,9 @@ class Hooks implements IExistingHooks
      * @param string $sectionName
      * @param array $dataSection
 	 */
-	public static function removeSection($sectionId, $sectionName, $externalId)
+	public static function removeSection($sectionId, $sectionName, $externalId);
 	{
-		echo "section removed";
+		return false;
 	}
 	
 }

@@ -36,6 +36,7 @@ class Hooks implements IExistingHooks
 	public static function createMachine()
 	{
 		echo "machine created";
+		return 418;
 	}
 	
 	/**
@@ -49,6 +50,7 @@ class Hooks implements IExistingHooks
 	public static function addSection($externalId, $sectionName, $dataSection)
 	{
 		echo "section created";
+		return 432;
 	}
 	
 	/**

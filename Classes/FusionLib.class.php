@@ -21,11 +21,6 @@ class FusionLib
 	{
 	}
 	
-	public function addHook($notification, $nameFunctionToLaunch, $uri)
-	{
-		// TODO	
-	}
-	
 	
 	/**
      * Singleton
@@ -106,16 +101,30 @@ class FusionLib
 		
 		if ($this->_isMachineExist($req))
 		{
+			
 			echo " machine exists";
+			
+			
 		} else {
+			
 			echo " machine doesn't exist";
+			
+			//We launch CreateMachine() hook and provide an InternalId (how?)
+			
+			try {
+			    $internalId = 12; // TODO
+			    $externalId = Hooks::CreateMachine();			
+			    $this->_addLibMachine($internalId, $externalId);
+			} catch (Exception $e){
+				
+			}
 		}
 
     }
 	
 	
 	/**
-   * We looks for the machine with the relevant criterias defined by user, if it doesn't exist, return false; else return true.
+   * We look for the machine with the relevant criterias defined by user, if it doesn't exist, return false; else return true.
    * @param $req SimpleXml object
    * @return $bool boolean
    */
@@ -127,7 +136,7 @@ class FusionLib
 				case "asset tag":
 				if ($simpleXMLObj->CONTENT->BIOS->ASSETTAG)
 				{
-					if (file_exists($configs["storageLocation"]."/"."assettag"."/".$simpleXMLObj->CONTENT->BIOS->ASSETTAG))
+					if (file_exists($configs["storageLocation"]."/"."assettag"."/".$configs["applicationName"]."/".$simpleXMLObj->CONTENT->BIOS->ASSETTAG))
 					{
 						continue;
 					} else {
@@ -147,6 +156,17 @@ class FusionLib
 		}
 		
 		return true;
+	}
+	
+	/**
+   * We create directory tree for machine and store software name and the externalId within YAML file.
+   * @param $internalId
+   * @param $externalId
+   */
+	private function _addLibMachine($internalId, $externalId)
+	{
+		
+	
 	}
 	
 

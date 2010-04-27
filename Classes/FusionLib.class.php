@@ -3,7 +3,11 @@ class FusionLib
 {
 	protected static $_instance;
 	
+	private $_configs;
 	
+	/**
+     * Disable instance
+     */
 	private function __construct()
 	{
 	}
@@ -27,7 +31,7 @@ class FusionLib
     }
     
 	/**
-	* Initialization :
+	* Configs :
 	* User defines:
 	* - where and how the data will be store
 	* - the application that will use the library
@@ -35,7 +39,7 @@ class FusionLib
 	* @param array $configs (storageEngine => "directory", storageLocation => "/data", applicationName => "GLPI", criterias => array("asset tag", "motherboard serial"))
 )
 	*/
-	public function init($configs)
+	public function setConfigs($configs)
     {
         if(isset($configs["storageEngine"] && $configs["storageLocation"] && $configs["applicationName"] && $configs["criterias"])){
 			
@@ -61,6 +65,8 @@ class FusionLib
 					throw new Exception ("an criteria that you specified doesn't exist");
 				}
 			}
+			
+			$this->_configs = $configs;
 			
 		} else {
 			throw new Exception ("you have to complete correctly configuration array");

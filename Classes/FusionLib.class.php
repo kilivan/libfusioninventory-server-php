@@ -146,7 +146,7 @@ class FusionLib
     
     /**
     * We look for the machine with the relevant criterias defined by user, if it doesn't exist, return false; else return true.
-    * @param $req SimpleXml object
+    * @param SimpleXml $simpleXMLObj
     * @return $bool boolean
     */
     private function _isMachineExist($simpleXMLObj)
@@ -325,8 +325,8 @@ class FusionLib
     
     /**
     * We create directory tree for machine and store software name and the externalId within YAML file.
-    * @param $internalId int
-    * @param $externalId int
+    * @param int $internalId
+    * @param int $externalId
     */
     private function _addLibMachine($internalId, $externalId)
     {
@@ -361,8 +361,9 @@ INFOCONTENT;
     
     /**
     * Determine data source name of criterias
-    * @param $criteriaName string
-    * @param $criteriaValue string
+    * @param string $criteriaName
+    * @param string $criteriaValue
+    * @return string 
     */
     private function _getCriteriaDSN($criteriaName, $criteriaValue)
     {
@@ -377,6 +378,17 @@ INFOCONTENT;
 	  return $dsn;	  
 	  
 	}
+	
+    }
+    
+    /**
+    * get all sections md5
+    * @param SimpleXml $simpleXMLObj
+    * @return array
+    */
+    private function _getHashSection($simpleXMLObj)
+    {
+        
 	
     }
   

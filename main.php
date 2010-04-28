@@ -8,7 +8,7 @@ $myConfigs = array(
 storageEngine => "directory", 
 storageLocation => "/data", 
 applicationName => "GLPI", 
-criterias => array(maxFalse => 2, items => array("asset tag", "motherboard serial")));
+criterias => array(maxFalse => 1, items => array("assetTag", "motherboardSerial")));
 
 $fusionLib->setConfigs($myConfigs);
 

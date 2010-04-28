@@ -330,18 +330,31 @@ class FusionLib
     */
     private function _addLibMachine($internalId, $externalId)
     {
-      $infoPath = sprintf('%s/%s/%s', 
+      $infoPath = sprintf('%s/%s/%s/%s', 
 	  $this->_configs["storageLocation"],
-	  "machins",
-	  $internalId);
+	  "machines",
+	  $internalId,
+	  $this->_configs["applicationName"]);
 	  
       if(!is_dir($infoPath))
       {
         mkdir($infoPath,0777,true);
       }
+      if (!file_exists($infoPath."/infos.yml")) 
+      {
+        $infoFile = fopen($infoPath."/infos.yml","w");
+	fclose($infoFile);
+      }
       
-      $infoFile = fopen($infoPath."/infos.yml","w+");
-      
+      $data = <<<INFOCONTENT
+external id: $externalId
+
+section:
+  - regegerher
+  - ghrhrghtrh
+INFOCONTENT;
+
+      file_put_contents($infoPath."/infos.yml", $data, FILE_APPEND);
       
       
     }

@@ -137,7 +137,7 @@ class FusionLib
 	  $externalId = Hooks::CreateMachine();			
 	  $this->_addLibMachine($internalId, $externalId);
 	} catch (Exception $e){
-	  
+	  echo 'created machine stage: error';
 	}
       }
       
@@ -325,21 +325,39 @@ class FusionLib
     
     /**
     * We create directory tree for machine and store software name and the externalId within YAML file.
-    * @param $internalId
-    * @param $externalId
+    * @param $internalId int
+    * @param $externalId int
     */
     private function _addLibMachine($internalId, $externalId)
     {
+      $infoPath = sprintf('%s/%s/%s', 
+	  $this->_configs["storageLocation"],
+	  "machins",
+	  $internalId);
+	  
+      if(!is_dir($infoPath))
+      {
+        mkdir($infoPath,0777,true);
+      }
+      
+      $infoFile = fopen($infoPath."/infos.yml","w+");
+      
       
       
     }
     
+    /**
+    * Determine data source name of criterias
+    * @param $criteriaName string
+    * @param $criteriaValue string
+    */
     private function _getCriteriaDSN($criteriaName, $criteriaValue)
     {
         if ($this->_configs["storageEngine"] == "directory")
 	{
-	  $dsn = sprintf('%s/%s/%s/%s', 
-	  $this->_configs["storageLocation"], 
+	  $dsn = sprintf('%s/%s/%s/%s/%s', 
+	  $this->_configs["storageLocation"],
+	  "criterias",
 	  $criteriaName,
 	  $this->_configs["applicationName"],
 	  $criteriaValue);

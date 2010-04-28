@@ -174,75 +174,147 @@ class FusionLib
 	    }
 	  break;
 	  case "motherboardSerial":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->BIOS->MOTHERBOARDSERIAL)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      if (file_exists($this->_getCriteriaDSN($criteria, $simpleXMLObj->CONTENT->BIOS->MOTHERBOARDSERIAL)))
+	      {
+		continue;
+	      } else {
+		$falseCriteriaNb++;
+	      }
 	    }
 	  break;
 	  case "msn":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->BIOS->MSN)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      if (file_exists($this->_getCriteriaDSN($criteria, $simpleXMLObj->CONTENT->BIOS->MSN)))
+	      {
+		continue;
+	      } else {
+		$falseCriteriaNb++;
+	      }
 	    }
 	  break;
 	  case "ssn":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->BIOS->SSN)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      if (file_exists($this->_getCriteriaDSN($criteria, $simpleXMLObj->CONTENT->BIOS->SSN)))
+	      {
+		continue;
+	      } else {
+		$falseCriteriaNb++;
+	      }
 	    }
 	  break;
 	  case "baseboardSerial":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->BIOS->BASEBOARDSERIAL)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      if (file_exists($this->_getCriteriaDSN($criteria, $simpleXMLObj->CONTENT->BIOS->BASEBOARDSERIAL)))
+	      {
+		continue;
+	      } else {
+		$falseCriteriaNb++;
+	      }
 	    }
 	  break;
 	  case "macAddress":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->NETWORKS)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      foreach($simpleXMLObj->CONTENT->NETWORKS as $networks){
+		if ($networks->VIRTUALDEV!=1){
+		  if (file_exists($this->_getCriteriaDSN($criteria, $networks->MACADDRESS)))
+		  {
+		    continue;
+		  } else {
+		    $falseCriteriaNb++;
+		  }
+		}
+	      }
 	    }
 	  break;
 	  case "uuid":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->HARDWARE->UUID)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      if (file_exists($this->_getCriteriaDSN($criteria, $simpleXMLObj->CONTENT->HARDWARE->UUID)))
+	      {
+		continue;
+	      } else {
+		$falseCriteriaNb++;
+	      }
 	    }
 	  break;
 	  case "winProdKey":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->HARDWARE->WINPRODKEY)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      if (file_exists($this->_getCriteriaDSN($criteria, $simpleXMLObj->CONTENT->HARDWARE->WINPRODKEY)))
+	      {
+		continue;
+	      } else {
+		$falseCriteriaNb++;
+	      }
 	    }
 	  break;
 	  case "biosSerial":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->BIOS->BIOSSERIAL)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      if (file_exists($this->_getCriteriaDSN($criteria, $simpleXMLObj->CONTENT->BIOS->BIOSSERIAL)))
+	      {
+		continue;
+	      } else {
+		$falseCriteriaNb++;
+	      }
 	    }
 	  break;
 	  case "enclosureSerial":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->BIOS->ENCLOSURESERIAL)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      if (file_exists($this->_getCriteriaDSN($criteria, $simpleXMLObj->CONTENT->BIOS->ENCLOSURESERIAL)))
+	      {
+		continue;
+	      } else {
+		$falseCriteriaNb++;
+	      }
 	    }
 	  break;
 	  case "smodel":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->BIOS->SMODEL)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      if (file_exists($this->_getCriteriaDSN($criteria, $simpleXMLObj->CONTENT->BIOS->SMODEL)))
+	      {
+		continue;
+	      } else {
+		$falseCriteriaNb++;
+	      }
 	    }
 	  break;
 	  case "storagesSerial":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->STORAGES)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      foreach($simpleXMLObj->CONTENT->STORAGES as $storages){
+		if ($storages->TYPE=="disk"){
+		  if (file_exists($this->_getCriteriaDSN($criteria, $storages->SERIAL)))
+		  {
+		    continue;
+		  } else {
+		    $falseCriteriaNb++;
+		  }
+		}
+	      }
 	    }
 	  break;
 	  case "drivesSerial":
-	    if ($simpleXMLObj->CONTENT->BIOS->ASSETTA)
+	    if ($simpleXMLObj->CONTENT->DRIVES)
 	    {
-	      var_dump($simpleXMLObj->CONTENT->BIOS->ASSETTAG);
+	      foreach($simpleXMLObj->CONTENT->DRIVES as $drives){
+		if ($drives->SYSTEMDRIVE==1){
+		  if (file_exists($this->_getCriteriaDSN($criteria, $drives->SERIAL)))
+		  {
+		    continue;
+		  } else {
+		    $falseCriteriaNb++;
+		  }
+		}
+	      }
 	    }
 	  break;    
 	}
@@ -264,14 +336,13 @@ class FusionLib
     
     private function _getCriteriaDSN($criteriaName, $criteriaValue)
     {
-        if ($this->_configs["directory"])
+        if ($this->_configs["storageEngine"] == "directory")
 	{
 	  $dsn = sprintf('%s/%s/%s/%s', 
 	  $this->_configs["storageLocation"], 
 	  $criteriaName,
 	  $this->_configs["applicationName"],
 	  $criteriaValue);
-	  echo $dsn;
 	  return $dsn;	  
 	  
 	}

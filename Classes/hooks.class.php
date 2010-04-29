@@ -6,15 +6,14 @@ interface IExistingHooks
 {
     public static function createMachine();
     public static function addSection($externalId, $sectionName, $dataSection);
-    public static function removeSection($sectionId, $sectionName, $externalId);	
+    public static function removeSection($sectionId, $sectionName, $externalId);
 }
-	
+
 
 
 /**
 * User defines hooks in this class.
 * There are three hooks to define: createMachine, addSection, removeSection
-* 
 */
 class Hooks implements IExistingHooks
 {
@@ -26,8 +25,8 @@ class Hooks implements IExistingHooks
     private function __construct()
     {
     }
-	
-	
+
+
     /**
     * create a new machine in an application
     * @access public
@@ -38,7 +37,7 @@ class Hooks implements IExistingHooks
         echo "machine created";
         return 418;
     }
-	
+
     /**
     * add a new section to the machine in an application
     * @access public
@@ -52,7 +51,7 @@ class Hooks implements IExistingHooks
         echo "section created";
         return 432;
     }
-	
+
     /**
     * remove a machine's section in an application
     * @access public
@@ -64,6 +63,6 @@ class Hooks implements IExistingHooks
     {
         echo "section removed";
     }
-	
+
 }
 ?>

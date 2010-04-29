@@ -6,9 +6,9 @@ $fusionLib = FusionLib::getInstance();
 // storageEngine and storageLocation relevant
 $myConfigs = array(
 storageEngine => "directory", 
-storageLocation => "/data", 
+storageLocation => "data", 
 applicationName => "GLPI", 
-criterias => array(maxFalse => 1, items => array("assetTag", "motherboardSerial")));
+criterias => array(maxFalse => 1, items => array("assetTag", "motherboardSerial", "macAddress")));
 
 $fusionLib->setConfigs($myConfigs);
 

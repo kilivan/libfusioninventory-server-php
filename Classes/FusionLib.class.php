@@ -134,12 +134,15 @@ class FusionLib
         if ($internalId = $this->_isMachineExist())
         {
             echo " machine exists $internalId";
+
+            $xmlHashSections = $this->_getXMLHashSections($simpleXMLObj);
         } else {
             echo " machine doesn't exist";
 
-            //We launch CreateMachine() hook and provide an InternalId 
+            //We launch CreateMachine() hook and provide an InternalId
+            $xmlHashSections = $this->_getXMLHashSections($simpleXmlObj);
+            $internalId = uniqid();
             try {
-                $internalId = uniqid();
                 $externalId = Hooks::CreateMachine();
                 $this->_addLibMachine($internalId, $externalId);
             } catch (Exception $e) {
@@ -152,7 +155,7 @@ class FusionLib
     /**
     * We look for the machine with the relevant criterias defined by user, if it doesn't exist, return false; else return true.
     * @param SimpleXml $simpleXMLObj
-    * @return bool false or int internalId
+    * @return bool false or internalId
     */
     private function _isMachineExist()
     {
@@ -356,7 +359,7 @@ INFOCONTENT;
     * Determine data source name of criterias
     * @param string $criteriaName
     * @param string $criteriaValue
-    * @return string
+    * @return string $dsn
     */
     private function _getCriteriaDSN($criteriaName, $criteriaValue)
     {
@@ -373,14 +376,29 @@ INFOCONTENT;
     }
 
     /**
-    * get all sections md5
-    * @param SimpleXml $simpleXMLObj
-    * @return array
+    * get all sections md5 from XML file
+    * @param simpleXML $simpleXmlObj
+    * @return string md5 array
     */
-    private function _getHashSections($simpleXMLObj)
+    private function _getXMLHashSections($simpleXMLObj)
     {
 
+        $xmlHashSections = array();
 
+        foreach($simpleXMLObj->CONTENT->children() as $section)
+        {
+            ob_start();
+            echo $section->getName()."<br />";
+            foreach ($section->children() as $data)
+            {
+                echo $data->getName().": ".$data."<br />";
+            }
+            $section = ob_get_contents();
+            ob_end_clean();
+
+            array_push($xmlHashSections, md5($section));
+        }
+        return $xmlHashSections;
     }
 
 }

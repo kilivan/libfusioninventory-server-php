@@ -6,12 +6,9 @@ require_once "hooks.class.php";
 class FusionLib
 {
     protected static $_instance;
-
     private $_configs;
-
     private $_machine;
     private $_section;
-
     private $_possibleCriterias;
 
     /**
@@ -28,11 +25,11 @@ class FusionLib
     */
     public static function getInstance()
     {
-    if(self::$_instance == null) {
-    self::$_instance = new self();
-    }
-    return self::$_instance;
-
+        if(self::$_instance == null)
+        {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
     }
 
     /**
@@ -40,23 +37,22 @@ class FusionLib
     */
     public function init()
     {
-    $this->_machine = new Machine();
-    $this->_section = new Section();
-    
-    $this->_possibleCriterias = array(
-    "motherboardSerial",
-    "assetTag",
-    "msn",
-    "ssn",
-    "baseboardSerial",
-    "macAddress",
-    "uuid",
-    "winProdKey",
-    "biosSerial",
-    "enclosureSerial",
-    "smodel",
-    "storagesSerial",
-    "drivesSerial");
+        $this->_machine = new Machine();
+        $this->_section = new Section();
+        $this->_possibleCriterias = array(
+        "motherboardSerial",
+        "assetTag",
+        "msn",
+        "ssn",
+        "baseboardSerial",
+        "macAddress",
+        "uuid",
+        "winProdKey",
+        "biosSerial",
+        "enclosureSerial",
+        "smodel",
+        "storagesSerial",
+        "drivesSerial");
     }
 
     /**
@@ -73,89 +69,83 @@ class FusionLib
     */
     public function setConfigs($configs)
     {
-    if(isset($configs["storageEngine"],
-    $configs["storageLocation"],
-    $configs["applicationName"],
-    $configs["criterias"]["maxFalse"],
-    $configs["criterias"]["items"]))
-    {
-
-    if (!(in_array($configs["storageEngine"], array("directory", "database"))))
-    {
-        throw new Exception ("storageEngine that you specified doesn't exist");
-    }
-
-    if (!(is_string($configs["storageLocation"])))
-    {
-        throw new Exception ("storageLocation isn't a string");
-    }
-
-    if (!(is_string($configs["applicationName"])))
-    {
-        throw new Exception ("applicationName isn't a string");
-    }
-
-    foreach($configs["criterias"]["items"] as $criteria)
-    {
-        if (!(in_array($criteria, $this->_possibleCriterias)))
+        if(isset($configs["storageEngine"],
+        $configs["storageLocation"],
+        $configs["applicationName"],
+        $configs["criterias"]["maxFalse"],
+        $configs["criterias"]["items"]))
         {
-        throw new Exception ("an criteria that you specified doesn't exist");
+
+            if (!(in_array($configs["storageEngine"], array("directory", "database"))))
+            {
+                throw new Exception ("storageEngine that you specified doesn't exist");
+            }
+
+            if (!(is_string($configs["storageLocation"])))
+            {
+                throw new Exception ("storageLocation isn't a string");
+            }
+
+            if (!(is_string($configs["applicationName"])))
+            {
+                throw new Exception ("applicationName isn't a string");
+            }
+
+            foreach($configs["criterias"]["items"] as $criteria)
+            {
+                if (!(in_array($criteria, $this->_possibleCriterias)))
+                {
+                    throw new Exception ("an criteria that you specified doesn't exist");
+                }
+            }
+
+            $this->_configs = $configs;
+
+        } else {
+            throw new Exception ("you have to complete correctly configuration array");
         }
-    }
-
-    $this->_configs = $configs;
-
-    } else {
-    throw new Exception ("you have to complete correctly configuration array");
-    }
-
 
     }
 
     public function start()
     {
-    // TODO: file reception
-    try {
-    $simpleXMLObj = simplexml_load_file("data/aofr.ocs");
-    } catch (Exception $e){
-    echo 'Exception : ',  $e->getMessage(), "\n";
-    }
+        // TODO: file reception
+        try {
+            $simpleXMLObj = simplexml_load_file("data/aofr.ocs");
+        } catch (Exception $e) {
+            echo 'Exception : ',  $e->getMessage(), "\n";
+        }
 
-    $this->_possibleCriterias = array(
-    motherboardSerial => $simpleXMLObj->CONTENT->BIOS->ASSETTAG,
-    assetTag => $simpleXMLObj->CONTENT->BIOS->MOTHERBOARDSERIAL,
-    msn => $simpleXMLObj->CONTENT->BIOS->MSN,
-    ssn => $simpleXMLObj->CONTENT->BIOS->SSN,
-    baseboardSerial => $simpleXMLObj->CONTENT->BIOS->BASEBOARDSERIAL,
-    macAddress => $simpleXMLObj->CONTENT->NETWORKS,
-    uuid => $simpleXMLObj->CONTENT->HARDWARE->UUID,
-    winProdKey => $simpleXMLObj->CONTENT->HARDWARE->WINPRODKEY,
-    biosSerial => $simpleXMLObj->CONTENT->BIOS->BIOSSERIAL,
-    enclosureSerial => $simpleXMLObj->CONTENT->BIOS->ENCLOSURESERIAL,
-    smodel => $simpleXMLObj->CONTENT->BIOS->SMODEL,
-    storagesSerial => $simpleXMLObj->CONTENT->STORAGES,
-    drivesSerial => $simpleXMLObj->CONTENT->DRIVES);
+        $this->_possibleCriterias = array(
+        motherboardSerial => $simpleXMLObj->CONTENT->BIOS->ASSETTAG,
+        assetTag => $simpleXMLObj->CONTENT->BIOS->MOTHERBOARDSERIAL,
+        msn => $simpleXMLObj->CONTENT->BIOS->MSN,
+        ssn => $simpleXMLObj->CONTENT->BIOS->SSN,
+        baseboardSerial => $simpleXMLObj->CONTENT->BIOS->BASEBOARDSERIAL,
+        macAddress => $simpleXMLObj->CONTENT->NETWORKS,
+        uuid => $simpleXMLObj->CONTENT->HARDWARE->UUID,
+        winProdKey => $simpleXMLObj->CONTENT->HARDWARE->WINPRODKEY,
+        biosSerial => $simpleXMLObj->CONTENT->BIOS->BIOSSERIAL,
+        enclosureSerial => $simpleXMLObj->CONTENT->BIOS->ENCLOSURESERIAL,
+        smodel => $simpleXMLObj->CONTENT->BIOS->SMODEL,
+        storagesSerial => $simpleXMLObj->CONTENT->STORAGES,
+        drivesSerial => $simpleXMLObj->CONTENT->DRIVES);
 
-    if ($this->_isMachineExist())
-    {
+        if ($this->_isMachineExist())
+        {
+            echo " machine exists";
+        } else {
+            echo " machine doesn't exist";
 
-    echo " machine exists";
-
-    } else {
-
-    echo " machine doesn't exist";
-
-    //We launch CreateMachine() hook and provide an InternalId (how?)
-
-    try {
-        $internalId = 12; // TODO
-        $externalId = Hooks::CreateMachine();
-        $this->_addLibMachine($internalId, $externalId);
-    } catch (Exception $e){
-        echo 'created machine stage: error';
-    }
-    }
-
+            //We launch CreateMachine() hook and provide an InternalId (how?)
+            try {
+                $internalId = 12; // TODO
+                $externalId = Hooks::CreateMachine();
+                $this->_addLibMachine($internalId, $externalId);
+            } catch (Exception $e) {
+                echo 'created machine stage: error';
+            }
+        }
     }
 
 
@@ -166,75 +156,84 @@ class FusionLib
     */
     private function _isMachineExist()
     {
+        $falseCriteriaNb=0;
 
-    $falseCriteriaNb=0;
-
-    foreach($this->_configs["criterias"]["items"] as $criteria)
-    {
-        if($falseCriteriaNb == $this->_configs["criterias"]["maxFalse"])
+        foreach($this->_configs["criterias"]["items"] as $criteria)
         {
-        return false;
+            if($falseCriteriaNb == $this->_configs["criterias"]["maxFalse"])
+            {
+                return false;
+            }
+
+            foreach($this->_possibleCriterias as $criteriaName => $criteriaValue)
+            {
+                if ($criteria == $criteriaName)
+                {
+                    if ($criteriaValue)
+                    {
+                        switch($criteria)
+                        {
+                            case "drivesSerial":
+                            foreach($criteriaValue as $drives)
+                            {
+                                if ($drives->SYSTEMDRIVE==1)
+                                {
+                                    if (file_exists($this->_getCriteriaDSN($criteria, $drives->SERIAL)))
+                                    {
+                                        continue;
+                                    } else {
+                                        $falseCriteriaNb++;
+                                    }
+                                }
+                            }
+                            break;
+                            
+                            case "storagesSerial":
+                            foreach($criteriaValue as $storages)
+                            {
+                                if ($storages->TYPE=="disk")
+                                {
+                                    if (file_exists($this->_getCriteriaDSN($criteria, $storages->SERIAL)))
+                                    {
+                                        continue;
+                                    } else {
+                                        $falseCriteriaNb++;
+                                    }
+                                }
+                            }
+                            break;
+                            
+                            case "macAddress":
+                            foreach($criteriaValue as $networks)
+                            {
+                                if ($networks->VIRTUALDEV!=1)
+                                {
+                                    if (file_exists($this->_getCriteriaDSN($criteria, $networks->MACADDR)))
+                                    {
+                                        continue;
+                                    } else {
+                                        $falseCriteriaNb++;
+                                    }
+                                }
+                            }
+                            break;
+                            
+                            default:
+                            if (file_exists($this->_getCriteriaDSN($criteria, $criteriaValue)))
+                            {
+                                continue;
+                            } else {
+                                $falseCriteriaNb++;
+                            }
+                            break;
+
+                        }
+                    }
+                }
+            }
         }
-
-        foreach($this->_possibleCriterias as $criteriaName => $criteriaValue)
-        {
-
-        if ($criteria == $criteriaName)
-        {
-        if ($criteriaValue)
-        {
-        switch($criteria){
-            case "drivesSerial":
-            foreach($criteriaValue as $drives){
-            if ($drives->SYSTEMDRIVE==1){
-            if (file_exists($this->_getCriteriaDSN($criteria, $drives->SERIAL)))
-            {
-                continue;
-            } else {
-                $falseCriteriaNb++;
-            }
-            }
-            }
-            break;
-            case "storagesSerial":
-            foreach($criteriaValue as $storages){
-            if ($storages->TYPE=="disk"){
-            if (file_exists($this->_getCriteriaDSN($criteria, $storages->SERIAL)))
-            {
-                continue;
-            } else {
-                $falseCriteriaNb++;
-            }
-            }
-            }
-            break;
-            case "macAddress":
-            foreach($criteriaValue as $networks){
-            if ($networks->VIRTUALDEV!=1){
-            if (file_exists($this->_getCriteriaDSN($criteria, $networks->MACADDR)))
-            {
-                continue;
-            } else {
-                $falseCriteriaNb++;
-            }
-            }
-            }
-            break;
-            default:
-            if (file_exists($this->_getCriteriaDSN($criteria, $criteriaValue)))
-            {
-            continue;
-            } else {
-                $falseCriteriaNb++;
-            }
-            break;
-
-            }
-        }
-        }
-    }
-    }
-    return true;
+        
+        return true;
     }
 
     /**
@@ -244,23 +243,23 @@ class FusionLib
     */
     private function _addLibMachine($internalId, $externalId)
     {
-    $infoPath = sprintf('%s/%s/%s/%s',
-        $this->_configs["storageLocation"],
-        "machines",
-        $internalId,
-        $this->_configs["applicationName"]);
+        $infoPath = sprintf('%s/%s/%s/%s',
+            $this->_configs["storageLocation"],
+            "machines",
+            $internalId,
+            $this->_configs["applicationName"]);
 
-    if(!is_dir($infoPath))
-    {
-    mkdir($infoPath,0777,true);
-    }
-    if (!file_exists($infoPath."/infos.yml"))
-    {
-    $infoFile = fopen($infoPath."/infos.yml","w");
-    fclose($infoFile);
-    }
+        if(!is_dir($infoPath))
+        {
+            mkdir($infoPath,0777,true);
+        }
+        if (!file_exists($infoPath."/infos.yml"))
+        {
+            $infoFile = fopen($infoPath."/infos.yml","w");
+            fclose($infoFile);
+        }
 
-    $data = <<<INFOCONTENT
+        $data = <<<INFOCONTENT
 external id: $externalId
 
 section:
@@ -268,8 +267,7 @@ section:
     - ghrhrghtrh
 INFOCONTENT;
 
-    file_put_contents($infoPath."/infos.yml", $data, FILE_APPEND);
-
+        file_put_contents($infoPath."/infos.yml", $data, FILE_APPEND);
 
     }
 
@@ -317,18 +315,16 @@ INFOCONTENT;
     */
     private function _getCriteriaDSN($criteriaName, $criteriaValue)
     {
-    if ($this->_configs["storageEngine"] == "directory")
-    {
-        $dsn = sprintf('%s/%s/%s/%s/%s',
-        $this->_configs["storageLocation"],
-        "criterias",
-        $criteriaName,
-        $this->_configs["applicationName"],
-        $criteriaValue);
-        return $dsn;
-
-    }
-
+        if ($this->_configs["storageEngine"] == "directory")
+        {
+            $dsn = sprintf('%s/%s/%s/%s/%s',
+            $this->_configs["storageLocation"],
+            "criterias",
+            $criteriaName,
+            $this->_configs["applicationName"],
+            $criteriaValue);
+            return $dsn;
+        }
     }
 
     /**
@@ -338,7 +334,6 @@ INFOCONTENT;
     */
     private function _getHashSections($simpleXMLObj)
     {
-
 
     }
 

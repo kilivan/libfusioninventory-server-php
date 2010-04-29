@@ -12,6 +12,8 @@ class FusionLib
     private $_machine;
     private $_section;
 
+    private $_possibleCriterias;
+
     /**
     * Disable instance
     * @access private
@@ -36,10 +38,25 @@ class FusionLib
     /**
     * Initialization
     */
-    private function _init()
+    public function init()
     {
     $this->_machine = new Machine();
     $this->_section = new Section();
+    
+    $this->_possibleCriterias = array(
+    "motherboardSerial",
+    "assetTag",
+    "msn",
+    "ssn",
+    "baseboardSerial",
+    "macAddress",
+    "uuid",
+    "winProdKey",
+    "biosSerial",
+    "enclosureSerial",
+    "smodel",
+    "storagesSerial",
+    "drivesSerial");
     }
 
     /**
@@ -78,24 +95,9 @@ class FusionLib
         throw new Exception ("applicationName isn't a string");
     }
 
-    $definedCriterias = array(
-    "motherboardSerial",
-    "assetTag",
-    "msn",
-    "ssn",
-    "baseboardSerial",
-    "macAddress",
-    "uuid",
-    "winProdKey",
-    "biosSerial",
-    "enclosureSerial",
-    "smodel",
-    "storagesSerial",
-    "drivesSerial");
-
     foreach($configs["criterias"]["items"] as $criteria)
     {
-        if (!(in_array($criteria, $definedCriterias)))
+        if (!(in_array($criteria, $this->_possibleCriterias)))
         {
         throw new Exception ("an criteria that you specified doesn't exist");
         }
@@ -112,17 +114,31 @@ class FusionLib
 
     public function start()
     {
-    $this->_init();
     // TODO: file reception
     try {
-    $req = simplexml_load_file("data/aofr.ocs");
+    $simpleXMLObj = simplexml_load_file("data/aofr.ocs");
     } catch (Exception $e){
     echo 'Exception : ',  $e->getMessage(), "\n";
     }
 
-    if ($this->_isMachineExist($req))
+    $this->_possibleCriterias = array(
+    motherboardSerial => $simpleXMLObj->CONTENT->BIOS->ASSETTAG,
+    assetTag => $simpleXMLObj->CONTENT->BIOS->MOTHERBOARDSERIAL,
+    msn => $simpleXMLObj->CONTENT->BIOS->MSN,
+    ssn => $simpleXMLObj->CONTENT->BIOS->SSN,
+    baseboardSerial => $simpleXMLObj->CONTENT->BIOS->BASEBOARDSERIAL,
+    macAddress => $simpleXMLObj->CONTENT->NETWORKS,
+    uuid => $simpleXMLObj->CONTENT->HARDWARE->UUID,
+    winProdKey => $simpleXMLObj->CONTENT->HARDWARE->WINPRODKEY,
+    biosSerial => $simpleXMLObj->CONTENT->BIOS->BIOSSERIAL,
+    enclosureSerial => $simpleXMLObj->CONTENT->BIOS->ENCLOSURESERIAL,
+    smodel => $simpleXMLObj->CONTENT->BIOS->SMODEL,
+    storagesSerial => $simpleXMLObj->CONTENT->STORAGES,
+    drivesSerial => $simpleXMLObj->CONTENT->DRIVES);
+
+    if ($this->_isMachineExist())
     {
-    
+
     echo " machine exists";
 
     } else {
@@ -148,25 +164,10 @@ class FusionLib
     * @param SimpleXml $simpleXMLObj
     * @return $bool boolean
     */
-    private function _isMachineExist($simpleXMLObj)
+    private function _isMachineExist()
     {
 
     $falseCriteriaNb=0;
-
-    $possibleCriterias = array(
-    motherboardSerial => $simpleXMLObj->CONTENT->BIOS->ASSETTAG,
-    assetTag => $simpleXMLObj->CONTENT->BIOS->MOTHERBOARDSERIAL,
-    msn => $simpleXMLObj->CONTENT->BIOS->MSN,
-    ssn => $simpleXMLObj->CONTENT->BIOS->SSN,
-    baseboardSerial => $simpleXMLObj->CONTENT->BIOS->BASEBOARDSERIAL,
-    macAddress => $simpleXMLObj->CONTENT->NETWORKS,
-    uuid => $simpleXMLObj->CONTENT->HARDWARE->UUID,
-    winProdKey => $simpleXMLObj->CONTENT->HARDWARE->WINPRODKEY,
-    biosSerial => $simpleXMLObj->CONTENT->BIOS->BIOSSERIAL,
-    enclosureSerial => $simpleXMLObj->CONTENT->BIOS->ENCLOSURESERIAL,
-    smodel => $simpleXMLObj->CONTENT->BIOS->SMODEL,
-    storagesSerial => $simpleXMLObj->CONTENT->STORAGES,
-    drivesSerial => $simpleXMLObj->CONTENT->DRIVES);
 
     foreach($this->_configs["criterias"]["items"] as $criteria)
     {
@@ -175,7 +176,7 @@ class FusionLib
         return false;
         }
 
-        foreach($possibleCriterias as $criteriaName => $criteriaValue)
+        foreach($this->_possibleCriterias as $criteriaName => $criteriaValue)
         {
 
         if ($criteria == $criteriaName)
@@ -204,13 +205,13 @@ class FusionLib
             } else {
                 $falseCriteriaNb++;
             }
-            }software name and the externalId
+            }
             }
             break;
             case "macAddress":
             foreach($criteriaValue as $networks){
             if ($networks->VIRTUALDEV!=1){
-            if (file_exists($this->_getCriteriaDSN($criteria, $networks->MACADDRESS)))
+            if (file_exists($this->_getCriteriaDSN($criteria, $networks->MACADDR)))
             {
                 continue;
             } else {
@@ -224,7 +225,7 @@ class FusionLib
             {
             continue;
             } else {
-            $falseCriteriaNb++;
+                $falseCriteriaNb++;
             }
             break;
 

@@ -117,8 +117,8 @@ class FusionLib
         }
 
         $this->_possibleCriterias = array(
-        motherboardSerial => $simpleXMLObj->CONTENT->BIOS->ASSETTAG,
-        assetTag => $simpleXMLObj->CONTENT->BIOS->MOTHERBOARDSERIAL,
+        motherboardSerial => $simpleXMLObj->CONTENT->BIOS->MOTHERBOARDSERIAL,
+        assetTag => $simpleXMLObj->CONTENT->BIOS->ASSETTAG,
         msn => $simpleXMLObj->CONTENT->BIOS->MSN,
         ssn => $simpleXMLObj->CONTENT->BIOS->SSN,
         baseboardSerial => $simpleXMLObj->CONTENT->BIOS->BASEBOARDSERIAL,
@@ -131,9 +131,9 @@ class FusionLib
         storagesSerial => $simpleXMLObj->CONTENT->STORAGES,
         drivesSerial => $simpleXMLObj->CONTENT->DRIVES);
 
-        if ($this->_isMachineExist())
+        if ($internalId = $this->_isMachineExist())
         {
-            echo " machine exists";
+            echo " machine exists $internalId";
         } else {
             echo " machine doesn't exist";
 
@@ -152,11 +152,12 @@ class FusionLib
     /**
     * We look for the machine with the relevant criterias defined by user, if it doesn't exist, return false; else return true.
     * @param SimpleXml $simpleXMLObj
-    * @return $bool boolean
+    * @return bool false or int internalId
     */
     private function _isMachineExist()
     {
         $falseCriteriaNb=0;
+        $internalId;
 
         foreach($this->_configs["criterias"]["items"] as $criteria)
         {
@@ -181,7 +182,7 @@ class FusionLib
                                 {
                                     if (file_exists($this->_getCriteriaDSN($criteria, $drives->SERIAL)))
                                     {
-                                        continue;
+                                        $internalId = scandir($this->_getCriteriaDSN($criteria, $drives->SERIAL));
                                     } else {
                                         $falseCriteriaNb++;
                                     }
@@ -196,7 +197,7 @@ class FusionLib
                                 {
                                     if (file_exists($this->_getCriteriaDSN($criteria, $storages->SERIAL)))
                                     {
-                                        continue;
+                                        $internalId = scandir($this->_getCriteriaDSN($criteria, $storages->SERIAL));
                                     } else {
                                         $falseCriteriaNb++;
                                     }
@@ -207,12 +208,12 @@ class FusionLib
                             case "macAddress":
                             foreach($criteriaValue as $networks)
                             {
-                                if ($networks->VIRTUALDEV!=1)
+                                if ($networks->VIRTUALDEV!=1 AND $networks->DESCRIPTION=="eth0")
                                 {
                                 
                                     if (file_exists($this->_getCriteriaDSN($criteria, $networks->MACADDR)))
                                     {
-                                        continue;
+                                        $internalId = scandir($this->_getCriteriaDSN($criteria, $networks->MACADDR));
                                     } else {
                                         $falseCriteriaNb++;
                                     }
@@ -223,7 +224,7 @@ class FusionLib
                             default:
                             if (file_exists($this->_getCriteriaDSN($criteria, $criteriaValue)))
                             {
-                                continue;
+                                $internalId = scandir($this->_getCriteriaDSN($criteria, $criteriaValue));
                             } else {
                                 $falseCriteriaNb++;
                             }
@@ -235,7 +236,7 @@ class FusionLib
             }
         }
         
-        return true;
+        return $internalId[2];
     }
 
     /**
@@ -323,7 +324,7 @@ INFOCONTENT;
                     case "macAddress":
                     foreach($criteriaValue as $networks)
                     {
-                        if ($networks->VIRTUALDEV!=1)
+                        if ($networks->VIRTUALDEV!=1 AND $networks->DESCRIPTION=="eth0")
                         {
                             $criteriaPath = $this->_getCriteriaDSN($criteriaName, $networks->MACADDR);
 
@@ -378,6 +379,7 @@ INFOCONTENT;
     */
     private function _getHashSections($simpleXMLObj)
     {
+
 
     }
 

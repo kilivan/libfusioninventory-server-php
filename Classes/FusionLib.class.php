@@ -160,6 +160,7 @@ class FusionLib
 
         foreach($this->_configs["criterias"]["items"] as $criteria)
         {
+
             if($falseCriteriaNb == $this->_configs["criterias"]["maxFalse"])
             {
                 return false;
@@ -208,6 +209,7 @@ class FusionLib
                             {
                                 if ($networks->VIRTUALDEV!=1)
                                 {
+                                
                                     if (file_exists($this->_getCriteriaDSN($criteria, $networks->MACADDR)))
                                     {
                                         continue;
@@ -269,42 +271,84 @@ INFOCONTENT;
 
         file_put_contents($infoPath."/infos.yml", $data, FILE_APPEND);
 
+        //Add criterias for this machine
+        $this->_addLibCriteriasMachine($internalId);
+
     }
 
     /**
-    * We create directory tree for criteria and store internalId within YAML file.
+    * We create directory tree for criteria and internalId.
     * @param int $internalId
-    * @param int $externalId
     */
-    private function _addLibCriterias($internalId, $externalId)
+    private function _addLibCriteriasMachine($internalId)
     {
-    $infoPath = sprintf('%s/%s/%s/%s',
-        $this->_configs["storageLocation"],
-        "machines",
-        $internalId,
-        $this->_configs["applicationName"]);
+        foreach($this->_possibleCriterias as $criteriaName => $criteriaValue)
+        {
+            if ($criteriaValue)
+            {
+                switch($criteriaName)
+                {
+                    case "drivesSerial":
+                    foreach($criteriaValue as $drives)
+                    {
+                        if ($drives->SYSTEMDRIVE==1)
+                        {
+                            $criteriaPath = $this->_getCriteriaDSN($criteriaName, $drives->SERIAL);
 
-    if(!is_dir($infoPath))
-    {
-    mkdir($infoPath,0777,true);
-    }
-    if (!file_exists($infoPath."/infos.yml"))
-    {
-    $infoFile = fopen($infoPath."/infos.yml","w");
-    fclose($infoFile);
-    }
+                            $internalIdPath = sprintf('%s/%s',
+                            $criteriaPath,
+                            $internalId);
 
-    $data = <<<INFOCONTENT
-external id: $externalId
+                            mkdir($internalIdPath,0777,true);
+                        }
+                    }
+                    break;
 
-section:
-    - regegerher
-    - ghrhrghtrh
-INFOCONTENT;
+                    case "storagesSerial":
+                    foreach($criteriaValue as $storages)
+                    {
+                        if ($storages->TYPE=="disk")
+                        {
+                            $criteriaPath = $this->_getCriteriaDSN($criteriaName, $storages->SERIAL);
 
-    file_put_contents($infoPath."/infos.yml", $data, FILE_APPEND);
+                            $internalIdPath = sprintf('%s/%s',
+                            $criteriaPath,
+                            $internalId);
 
+                            mkdir($internalIdPath,0777,true);
+                        }
+                    }
+                    break;
 
+                    case "macAddress":
+                    foreach($criteriaValue as $networks)
+                    {
+                        if ($networks->VIRTUALDEV!=1)
+                        {
+                            $criteriaPath = $this->_getCriteriaDSN($criteriaName, $networks->MACADDR);
+
+                            $internalIdPath = sprintf('%s/%s',
+                            $criteriaPath,
+                            $internalId);
+
+                            mkdir($internalIdPath,0777,true);
+                        }
+                    }
+                    break;
+
+                    default:
+                    $criteriaPath = $this->_getCriteriaDSN($criteriaName, $criteriaValue);
+
+                    $internalIdPath = sprintf('%s/%s',
+                    $criteriaPath,
+                    $internalId);
+
+                    mkdir($internalIdPath,0777,true);
+                    break;
+
+                }
+            }
+        }
     }
 
     /**

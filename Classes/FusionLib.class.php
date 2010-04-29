@@ -137,9 +137,9 @@ class FusionLib
         } else {
             echo " machine doesn't exist";
 
-            //We launch CreateMachine() hook and provide an InternalId (how?)
+            //We launch CreateMachine() hook and provide an InternalId 
             try {
-                $internalId = 12; // TODO
+                $internalId = uniqid();
                 $externalId = Hooks::CreateMachine();
                 $this->_addLibMachine($internalId, $externalId);
             } catch (Exception $e) {
@@ -241,8 +241,8 @@ class FusionLib
 
     /**
     * We create directory tree for machine and store the externalId within YAML file.
-    * @param int $internalId
-    * @param int $externalId
+    * @param $internalId
+    * @param $externalId
     */
     private function _addLibMachine($internalId, $externalId)
     {
@@ -382,7 +382,6 @@ INFOCONTENT;
 
 
     }
-
 
 }
 

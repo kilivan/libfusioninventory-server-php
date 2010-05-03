@@ -139,7 +139,7 @@ class FusionLib
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
             $iniSections = $this->_getINISections($internalId);
 
-            $this->_updateLibMachine($xmlSections, $iniSections);
+            $this->_updateLibMachine($xmlSections, $iniSections, $internalId);
 
 
         } else {
@@ -307,7 +307,7 @@ class FusionLib
 $sectionsHashData
 INFOCONTENT;
 
-        file_put_contents($infoPath."/infos.ini", $data, FILE_APPEND);
+        file_put_contents($infoPath."/infos.ini", $data);
 
         //Add criterias for this machine
         $this->_addLibCriteriasMachine($internalId);
@@ -467,8 +467,9 @@ INFOCONTENT;
     * Determine if there are sections changement and update
     * @param array $xmlSections
     * @param array $iniSections
+    * @param int $internalId
     */
-    private function _updateLibMachine($xmlSections, $iniSections)
+    private function _updateLibMachine($xmlSections, $iniSections, $internalId)
     {
 
         $xmlHashSections = array();
@@ -480,30 +481,61 @@ INFOCONTENT;
 
         $sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
         $sectionsToRemove = array_diff($iniSections["sections"], $xmlHashSections);
-        var_dump($sectionsToAdd);
 
+        var_dump($sectionsToAdd);
         if ($sectionsToRemove)
         {
-            array_flip($sectionsToRemove);
-            foreach($sectionsToRemove as $sectionId)
+
+            foreach($sectionsToRemove as $sectionId => $hashSection)
             {
                 Hooks::removeSection($sectionId, $iniSections["externalId"][0]);
+                unset($iniSections["sections"][$sectionId]);
             }
         }
         if ($sectionsToAdd)
         {
-            array_flip($sectionsToAdd);
-            /*
-            foreach($sectionsToAdd as &$arrayId)
+
+            foreach($sectionsToAdd as $arrayId => $hashSection)
             {
-                $arrayId = array_merge(array(
-                sectionId=>Hooks::addSection(
+                $iniSections["sections"] = array_merge(array(
+                Hooks::addSection(
                 $iniSections["externalId"][0],
                 $xmlSections[$arrayId]['sectionName'],
-                $xmlSections[$arrayId]['sectionData'])),
-                $arrayId);
+                $xmlSections[$arrayId]['sectionData'])
+                => $xmlSections[$arrayId]['sectionHash']),
+                $iniSections["sections"]);
 
-            }*/
+            }
+        }
+
+        if ($sectionsToAdd or $sectionsToRemove)
+        {
+            ob_start();
+            foreach($iniSections["sections"] as $key => $hash)
+            {
+                echo $key."=".$hash."
+";
+            }
+            $sectionsHashData = ob_get_contents();
+            ob_end_clean();
+            
+            $externalId=$iniSections["externalId"][0];
+            
+            $data = <<<INFOCONTENT
+[externalId]
+0=$externalId
+
+[sections]
+$sectionsHashData
+INFOCONTENT;
+
+            $infoPath = sprintf('%s/%s/%s/%s',
+            $this->_configs["storageLocation"],
+            "machines",
+            $internalId,
+            $this->_configs["applicationName"]);
+            
+            file_put_contents($infoPath."/infos.ini", $data);
         }
     }
 

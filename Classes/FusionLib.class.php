@@ -111,7 +111,7 @@ class FusionLib
     {
         // TODO: file reception
         try {
-            $simpleXMLObj = simplexml_load_file("data/aofr.ocs");
+            $simpleXMLObj = simplexml_load_file("data/UC021527-2010-04-09-14-49-31.ocs");
         } catch (Exception $e) {
             echo 'Exception : ',  $e->getMessage(), "\n";
         }
@@ -135,16 +135,18 @@ class FusionLib
         {
             echo " machine exists $internalId";
 
-            $xmlHashSections = $this->_getXMLHashSections($simpleXMLObj);
+            $xmlSections = $this->_getXMLSections($simpleXMLObj);
+            var_dump($xmlSections);
         } else {
             echo " machine doesn't exist";
 
             //We launch CreateMachine() hook and provide an InternalId
-            $xmlHashSections = $this->_getXMLHashSections($simpleXmlObj);
+            $xmlSections = $this->_getXMLSections($simpleXMLObj);
             $internalId = uniqid();
             try {
                 $externalId = Hooks::CreateMachine();
-                $this->_addLibMachine($internalId, $externalId);
+                //$sectionId = Hooks::
+                $this->_addLibMachine($internalId, $externalId, $xmlHashSections);
             } catch (Exception $e) {
                 echo 'created machine stage: error';
             }
@@ -210,7 +212,7 @@ class FusionLib
                             
                             case "macAddress":
                             foreach($criteriaValue as $networks)
-                            {
+                            {return $internalId[2];
                                 if ($networks->VIRTUALDEV!=1 AND $networks->DESCRIPTION=="eth0")
                                 {
                                 
@@ -238,16 +240,25 @@ class FusionLib
                 }
             }
         }
+        if (isset($internalId[2]))
+        {
+            return $internalId[2];
+        }
+        else {
+            //in the case: all criterias determined by user does't exist : The machine exists
+            return true;
+        }
         
-        return $internalId[2];
+        
     }
 
     /**
     * We create directory tree for machine and store the externalId within YAML file.
     * @param $internalId
     * @param $externalId
+    * @param $xmlHashSections
     */
-    private function _addLibMachine($internalId, $externalId)
+    private function _addLibMachine($internalId, $externalId, $xmlHashSections)
     {
         $infoPath = sprintf('%s/%s/%s/%s',
             $this->_configs["storageLocation"],
@@ -264,6 +275,9 @@ class FusionLib
             $infoFile = fopen($infoPath."/infos.yml","w");
             fclose($infoFile);
         }
+
+        //Add directly hash section to the new machine
+        
 
         $data = <<<INFOCONTENT
 external id: $externalId
@@ -378,12 +392,12 @@ INFOCONTENT;
     /**
     * get all sections md5 from XML file
     * @param simpleXML $simpleXmlObj
-    * @return string md5 array
+    * @return array $xmlSections (hash,name and data)
     */
-    private function _getXMLHashSections($simpleXMLObj)
+    private function _getXMLSections($simpleXMLObj)
     {
 
-        $xmlHashSections = array();
+        $xmlSections = array();
 
         foreach($simpleXMLObj->CONTENT->children() as $section)
         {
@@ -393,12 +407,15 @@ INFOCONTENT;
             {
                 echo $data->getName().": ".$data."<br />";
             }
-            $section = ob_get_contents();
+            $sectionData = ob_get_contents();
             ob_end_clean();
 
-            array_push($xmlHashSections, md5($section));
+            array_push($xmlSections, (array(
+            sectionHash => md5($sectionData),
+            sectionName => $section->getName(),
+            sectionData => $sectionData)));
         }
-        return $xmlHashSections;
+        return $xmlSections;
     }
 
 }

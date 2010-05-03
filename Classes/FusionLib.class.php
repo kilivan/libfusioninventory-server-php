@@ -139,25 +139,7 @@ class FusionLib
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
             $iniSections = $this->_getINISections($internalId);
 
-            $xmlHashSections = array();
-            foreach($xmlSections as $xmlSection)
-            {
-                array_push($xmlHashSections, $xmlSection["sectionHash"]);
-            }
-
-            $sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
-            $sectionsToRemove = array_diff($iniSections["sections"], $xmlHashSections);
-
-            if ($sectionsToRemove)
-            {
-                array_flip($sectionsToRemove);
-                foreach($sectionsToRemove as $sectionId)
-                {
-                    Hooks::removeSection($sectionId, $iniSections["externalId"]);
-                }
-            }
-
-            
+            $this->_updateLibMachine($xmlSections, $iniSections);
 
 
         } else {
@@ -172,10 +154,12 @@ class FusionLib
                 // it's a new machine, we add directly all machine's sections
                 foreach($xmlSections as &$section)
                 {
-                    $section = array_merge(array(
-                    sectionId=>Hooks::addSection($externalId, $section['sectionName'], $section['sectionData'])),
-                    $section);
+                    $section["sectionId"] = Hooks::addSection(
+                    $externalId,
+                    $section['sectionName'],
+                    $section['sectionData']);
                 }
+                var_dump($xmlSections);
                 $this->_addLibMachine($internalId, $externalId, $xmlSections);
             } catch (Exception $e) {
                 echo 'created machine stage: error';
@@ -447,6 +431,7 @@ INFOCONTENT;
             ob_end_clean();
 
             array_push($xmlSections, (array(
+            sectionId => 0,
             sectionHash => md5($sectionData),
             sectionName => $section->getName(),
             sectionData => $sectionData)));
@@ -479,29 +464,47 @@ INFOCONTENT;
     }
 
     /**
-    * Determine if there are sections changement
+    * Determine if there are sections changement and update
     * @param array $xmlSections
-    * @param array$iniSections
-    * @return bool
+    * @param array $iniSections
     */
-    private function _haveSectionsChanged($xmlSections, $iniSections)
+    private function _updateLibMachine($xmlSections, $iniSections)
     {
+
         $xmlHashSections = array();
         foreach($xmlSections as $xmlSection)
         {
             array_push($xmlHashSections, $xmlSection["sectionHash"]);
         }
 
+
         $sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
         $sectionsToRemove = array_diff($iniSections["sections"], $xmlHashSections);
+        var_dump($sectionsToAdd);
 
-        if ($sectionsToAdd or $sectionsToRemove)
+        if ($sectionsToRemove)
         {
-            return true;
-        } else {
-            return false;
+            array_flip($sectionsToRemove);
+            foreach($sectionsToRemove as $sectionId)
+            {
+                Hooks::removeSection($sectionId, $iniSections["externalId"][0]);
+            }
         }
+        if ($sectionsToAdd)
+        {
+            array_flip($sectionsToAdd);
+            /*
+            foreach($sectionsToAdd as &$arrayId)
+            {
+                $arrayId = array_merge(array(
+                sectionId=>Hooks::addSection(
+                $iniSections["externalId"][0],
+                $xmlSections[$arrayId]['sectionName'],
+                $xmlSections[$arrayId]['sectionData'])),
+                $arrayId);
 
+            }*/
+        }
     }
 
 }

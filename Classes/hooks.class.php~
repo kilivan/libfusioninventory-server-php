@@ -35,7 +35,7 @@ class Hooks implements IExistingHooks
     public static function createMachine()
     {
         echo "machine created";
-        return 418;
+        return uniqid();
     }
 
     /**
@@ -49,7 +49,7 @@ class Hooks implements IExistingHooks
     public static function addSection($externalId, $sectionName, $dataSection)
     {
         echo "section created";
-        return 432;
+        return uniqid();
     }
 
     /**
@@ -59,7 +59,7 @@ class Hooks implements IExistingHooks
     * @param string $sectionName
     * @param array $dataSection
     */
-    public static function removeSection($sectionId, $sectionName, $externalId)
+    public static function removeSection($sectionId, $externalId)
     {
         echo "section removed";
     }

@@ -135,7 +135,30 @@ class FusionLib
         {
             echo " machine exists $internalId";
 
+            //Sections update
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
+            $iniSections = $this->_getINISections($internalId);
+
+            $xmlHashSections = array();
+            foreach($xmlSections as $xmlSection)
+            {
+                array_push($xmlHashSections, $xmlSection["sectionHash"]);
+            }
+
+            $sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
+            $sectionsToRemove = array_diff($iniSections["sections"], $xmlHashSections);
+
+            if ($sectionsToRemove)
+            {
+                array_flip($sectionsToRemove);
+                foreach($sectionsToRemove as $sectionId)
+                {
+                    Hooks::removeSection($sectionId, $iniSections["externalId"]);
+                }
+            }
+
+            
+
 
         } else {
             echo " machine doesn't exist";
@@ -144,16 +167,15 @@ class FusionLib
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
             $internalId = uniqid();
             try {
-                $externalId = Hooks::CreateMachine();
+                $externalId = Hooks::createMachine();
+                
                 // it's a new machine, we add directly all machine's sections
-                foreach($xmlSections as &$sections)
+                foreach($xmlSections as &$section)
                 {
-                    $sections = array_merge(array(
+                    $section = array_merge(array(
                     sectionId=>Hooks::addSection($externalId, $section['sectionName'], $section['sectionData'])),
-                    $sections);
-
+                    $section);
                 }
-                var_dump($xmlSections);
                 $this->_addLibMachine($internalId, $externalId, $xmlSections);
             } catch (Exception $e) {
                 echo 'created machine stage: error';
@@ -253,8 +275,7 @@ class FusionLib
             return $internalId[2];
         }
         else {
-            //in the case: all criterias determined by user does't exist : The machine exists
-            return true;
+            throw new Exception ("no avalaible criterias to compare");
         }
         
         
@@ -288,15 +309,15 @@ class FusionLib
         ob_start();
         foreach($xmlSections as $section)
         {
-            echo $section["sectionId"].": ".$section["sectionHash"]."
+            echo $section["sectionId"]."=".$section["sectionHash"]."
 ";
         }
         $sectionsHashData = ob_get_contents();
         ob_end_clean();
 
         $data = <<<INFOCONTENT
-[external id]
-$externalId
+[externalId]
+0=$externalId
 
 [sections]
 $sectionsHashData
@@ -431,6 +452,56 @@ INFOCONTENT;
             sectionData => $sectionData)));
         }
         return $xmlSections;
+    }
+
+    /**
+    * get all sections with its hash,and sectionId from INI file
+    * @param int $internalId
+    * @return array $iniSections (hash and sectionId)
+    */
+    private function _getINISections($internalId)
+    {
+        $infoPath = sprintf('%s/%s/%s/%s',
+        $this->_configs["storageLocation"],
+        "machines",
+        $internalId,
+        $this->_configs["applicationName"]);
+
+        try
+        {
+            $iniSections = parse_ini_file($infoPath."/infos.ini", true);
+
+        } catch (Exception $e) {
+            echo 'error parse: ini file';
+        }
+
+        return $iniSections;
+    }
+
+    /**
+    * Determine if there are sections changement
+    * @param array $xmlSections
+    * @param array$iniSections
+    * @return bool
+    */
+    private function _haveSectionsChanged($xmlSections, $iniSections)
+    {
+        $xmlHashSections = array();
+        foreach($xmlSections as $xmlSection)
+        {
+            array_push($xmlHashSections, $xmlSection["sectionHash"]);
+        }
+
+        $sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
+        $sectionsToRemove = array_diff($iniSections["sections"], $xmlHashSections);
+
+        if ($sectionsToAdd or $sectionsToRemove)
+        {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
 }

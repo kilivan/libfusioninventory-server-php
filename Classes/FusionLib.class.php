@@ -136,7 +136,7 @@ class FusionLib
             echo " machine exists $internalId";
 
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
-            var_dump($xmlSections);
+
         } else {
             echo " machine doesn't exist";
 
@@ -145,8 +145,16 @@ class FusionLib
             $internalId = uniqid();
             try {
                 $externalId = Hooks::CreateMachine();
-                //$sectionId = Hooks::
-                $this->_addLibMachine($internalId, $externalId, $xmlHashSections);
+                // it's a new machine, we add directly all machine's sections
+                foreach($xmlSections as &$sections)
+                {
+                    $sections = array_merge(array(
+                    sectionId=>Hooks::addSection($externalId, $section['sectionName'], $section['sectionData'])),
+                    $sections);
+
+                }
+                var_dump($xmlSections);
+                $this->_addLibMachine($internalId, $externalId, $xmlSections);
             } catch (Exception $e) {
                 echo 'created machine stage: error';
             }
@@ -258,7 +266,7 @@ class FusionLib
     * @param $externalId
     * @param $xmlHashSections
     */
-    private function _addLibMachine($internalId, $externalId, $xmlHashSections)
+    private function _addLibMachine($internalId, $externalId, $xmlSections)
     {
         $infoPath = sprintf('%s/%s/%s/%s',
             $this->_configs["storageLocation"],
@@ -270,24 +278,31 @@ class FusionLib
         {
             mkdir($infoPath,0777,true);
         }
-        if (!file_exists($infoPath."/infos.yml"))
+        if (!file_exists($infoPath."/infos.ini"))
         {
-            $infoFile = fopen($infoPath."/infos.yml","w");
+            $infoFile = fopen($infoPath."/infos.ini","w");
             fclose($infoFile);
         }
 
         //Add directly hash section to the new machine
-        
+        ob_start();
+        foreach($xmlSections as $section)
+        {
+            echo $section["sectionId"].": ".$section["sectionHash"]."
+";
+        }
+        $sectionsHashData = ob_get_contents();
+        ob_end_clean();
 
         $data = <<<INFOCONTENT
-external id: $externalId
+[external id]
+$externalId
 
-section:
-    - regegerher
-    - ghrhrghtrh
+[sections]
+$sectionsHashData
 INFOCONTENT;
 
-        file_put_contents($infoPath."/infos.yml", $data, FILE_APPEND);
+        file_put_contents($infoPath."/infos.ini", $data, FILE_APPEND);
 
         //Add criterias for this machine
         $this->_addLibCriteriasMachine($internalId);
@@ -390,7 +405,7 @@ INFOCONTENT;
     }
 
     /**
-    * get all sections md5 from XML file
+    * get all sections with its hash,name and data from XML file
     * @param simpleXML $simpleXmlObj
     * @return array $xmlSections (hash,name and data)
     */

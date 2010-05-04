@@ -41,19 +41,19 @@ class DirectoryStorage extends Storage
         $this->_configs=$configs;
 
         $this->_possibleCriterias = array(
-        motherboardSerial => $simpleXMLData->CONTENT->BIOS->MOTHERBOARDSERIAL,
-        assetTag => $simpleXMLData->CONTENT->BIOS->ASSETTAG,
-        msn => $simpleXMLData->CONTENT->BIOS->MSN,
-        ssn => $simpleXMLData->CONTENT->BIOS->SSN,
-        baseboardSerial => $simpleXMLData->CONTENT->BIOS->BASEBOARDSERIAL,
-        macAddress => $simpleXMLData->CONTENT->NETWORKS,
-        uuid => $simpleXMLData->CONTENT->HARDWARE->UUID,
-        winProdKey => $simpleXMLData->CONTENT->HARDWARE->WINPRODKEY,
-        biosSerial => $simpleXMLData->CONTENT->BIOS->BIOSSERIAL,
-        enclosureSerial => $simpleXMLData->CONTENT->BIOS->ENCLOSURESERIAL,
-        smodel => $simpleXMLData->CONTENT->BIOS->SMODEL,
-        storagesSerial => $simpleXMLData->CONTENT->STORAGES,
-        drivesSerial => $simpleXMLData->CONTENT->DRIVES);
+        "motherboardSerial" => $simpleXMLData->CONTENT->BIOS->MOTHERBOARDSERIAL,
+        "assetTag" => $simpleXMLData->CONTENT->BIOS->ASSETTAG,
+        "msn" => $simpleXMLData->CONTENT->BIOS->MSN,
+        "ssn" => $simpleXMLData->CONTENT->BIOS->SSN,
+        "baseboardSerial" => $simpleXMLData->CONTENT->BIOS->BASEBOARDSERIAL,
+        "macAddress" => $simpleXMLData->CONTENT->NETWORKS,
+        "uuid" => $simpleXMLData->CONTENT->HARDWARE->UUID,
+        "winProdKey" => $simpleXMLData->CONTENT->HARDWARE->WINPRODKEY,
+        "biosSerial" => $simpleXMLData->CONTENT->BIOS->BIOSSERIAL,
+        "enclosureSerial" => $simpleXMLData->CONTENT->BIOS->ENCLOSURESERIAL,
+        "smodel" => $simpleXMLData->CONTENT->BIOS->SMODEL,
+        "storagesSerial" => $simpleXMLData->CONTENT->STORAGES,
+        "drivesSerial" => $simpleXMLData->CONTENT->DRIVES);
     }
 
     /**

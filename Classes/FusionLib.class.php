@@ -1,8 +1,27 @@
 <?php
 require_once "hooks.class.php";
 require_once "storage.class.php";
+// +----------------------------------------------------------------------+
+// | PHP version 5                                                        |
+// +----------------------------------------------------------------------+
+// | FusionLibServer provides a solution to process data from both OCS    |
+// | agents and Fusion agents.                                            |
+// | Users can easily retrieve data from these agents with hooks system.  |
+// +----------------------------------------------------------------------+
+// | Author: Taha Goulamhoussen <taha.goulamhoussen@gmail.com>            |
+// +----------------------------------------------------------------------+
+//
+// FusionLib.class.php,v 1 04/05/2010
+//
 
-class FusionLib
+/**
+* @package FusionInventory
+* @category Server process
+* @author Taha Goulamhoussen <taha.goulamhoussen@gmail.com>
+* @license BSD
+* @link http://fusioninventory.org/
+*/
+class FusionLibServer
 {
     protected static $_instance;
     private $_configs;
@@ -145,7 +164,7 @@ class FusionLib
 
     /**
     * get all sections with its hash,name and data from XML file
-    * @param simpleXML $simpleXmlObj
+    * @param simpleXML $simpleXMLObj
     * @return array $xmlSections (hash,name and data)
     */
     private function _getXMLSections($simpleXMLObj)
@@ -165,10 +184,10 @@ class FusionLib
             ob_end_clean();
 
             array_push($xmlSections, (array(
-            sectionId => 0,
-            sectionHash => md5($sectionData),
-            sectionName => $section->getName(),
-            sectionData => $sectionData)));
+            "sectionId" => 0,
+            "sectionHash" => md5($sectionData),
+            "sectionName" => $section->getName(),
+            "sectionData" => $sectionData)));
         }
         return $xmlSections;
     }

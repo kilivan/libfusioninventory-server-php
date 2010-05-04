@@ -1,14 +1,10 @@
 <?php
-require_once "machine.class.php";
-require_once "section.class.php";
 require_once "hooks.class.php";
 
 class FusionLib
 {
     protected static $_instance;
     private $_configs;
-    private $_machine;
-    private $_section;
     private $_possibleCriterias;
 
     /**
@@ -37,8 +33,6 @@ class FusionLib
     */
     public function init()
     {
-        $this->_machine = new Machine();
-        $this->_section = new Section();
         $this->_possibleCriterias = array(
         "motherboardSerial",
         "assetTag",
@@ -60,7 +54,7 @@ class FusionLib
     * User defines:
     * - where and how the data will be store
     * - the application that will use the library
-    * - the priority and the list of criterias
+    * - the list of criterias and a margin for errors
     * @param array $configs (
     * storageEngine => "directory",
     * storageLocation => "/data",
@@ -159,7 +153,6 @@ class FusionLib
                     $section['sectionName'],
                     $section['sectionData']);
                 }
-                var_dump($xmlSections);
                 $this->_addLibMachine($internalId, $externalId, $xmlSections);
             } catch (Exception $e) {
                 echo 'created machine stage: error';
@@ -169,8 +162,7 @@ class FusionLib
 
 
     /**
-    * We look for the machine with the relevant criterias defined by user, if it doesn't exist, return false; else return true.
-    * @param SimpleXml $simpleXMLObj
+    * We look for the machine with the relevant criterias defined by user, if it doesn't exist, return false; else return internalId.
     * @return bool false or internalId
     */
     private function _isMachineExist()
@@ -482,7 +474,6 @@ INFOCONTENT;
         $sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
         $sectionsToRemove = array_diff($iniSections["sections"], $xmlHashSections);
 
-        var_dump($sectionsToAdd);
         if ($sectionsToRemove)
         {
 

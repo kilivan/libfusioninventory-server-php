@@ -127,7 +127,6 @@ class DirectoryStorage extends Storage
                             break;
 
                             default:
-
                             if (file_exists($this->_getCriteriaDSN($criteria, $criteriaValue)))
                             {
                                 $internalId = scandir($this->_getCriteriaDSN($criteria, $criteriaValue));

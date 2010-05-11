@@ -1,7 +1,7 @@
 <?php
-require_once "Classes/Hooks.class.php";
-require_once "Classes/Action.class.php";
-require_once "Classes/Storage/Inventory/StorageInventory.class.php";
+require_once dirname(__FILE__) . '/../Hooks.class.php';
+require_once dirname(__FILE__) . '/../Action.class.php';
+require_once dirname(__FILE__) . '/../Storage/Inventory/StorageInventory.class.php';
 
 class InventoryAction extends Action
 {
@@ -120,15 +120,10 @@ RESPONSE;
             try {
                 $externalId = Hooks::createMachine();
 
-                // it's a new machine, we add directly all machine's sections
-                foreach($xmlSections as &$section)
-                {
-                    $section["sectionId"] = Hooks::addSection(
-                    $externalId,
-                    $section['sectionName'],
-                    $section['sectionData']);
-                }
                 $libData->addLibMachine($internalId, $externalId, $xmlSections);
+                $libData->addLibCriteriasMachine($internalId);
+
+                $libData->updateLibMachine($xmlSections, $internalId);
             } catch (Exception $e) {
                 echo 'created machine stage: error';
             }

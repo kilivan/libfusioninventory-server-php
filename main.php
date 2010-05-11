@@ -1,19 +1,18 @@
 <?php
-require_once "Classes/FusionLib.class.php";
+set_include_path(dirname(__FILE__) . PATH_SEPARATOR . get_include_path());
+require_once "Classes/FusionLibServer.class.php";
 
-$fusionLib = FusionLib::getInstance();
-
-$fusionLib->init();
+$fusionLibServer = FusionLibServer::getInstance();
 
 // storageEngine and storageLocation relevant
 $myConfigs = array(
-storageEngine => "directory", 
-storageLocation => "data", 
-applicationName => "GLPI", 
-criterias => array(maxFalse => 2, items => array("assetTag", "motherboardSerial", "macAddress")));
+"storageEngine" => "Directory",
+"storageLocation" => "data", 
+"applicationName" => "MyWebSite",
+"criterias" => array(maxFalse => 1, items => array("assetTag", "motherboardSerial", "macAddress", "baseboardSerial")));
 
-$fusionLib->setConfigs($myConfigs);
+$fusionLibServer->setConfigs($myConfigs);
 
-$fusionLib->start();
+$fusionLibServer->start("inventory");
 
 ?>

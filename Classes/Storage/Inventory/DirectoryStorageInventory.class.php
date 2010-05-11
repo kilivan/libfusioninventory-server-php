@@ -1,5 +1,5 @@
 <?php
-require_once "StorageInventory.class.php";
+require_once dirname(__FILE__) . '/StorageInventory.class.php';
 
 class DirectoryStorageInventory extends StorageInventory
 {
@@ -121,7 +121,7 @@ class DirectoryStorageInventory extends StorageInventory
 
     /**
     * We create directory tree for machine and store the externalId within YAML file.
-    * @param $internalId
+    * @param string $internalId
     * @param $externalId
     * @param $xmlHashSections
     */
@@ -143,36 +143,23 @@ class DirectoryStorageInventory extends StorageInventory
             fclose($infoFile);
         }
 
-        //Add directly hash section to the new machine
-        ob_start();
-        foreach($xmlSections as $section)
-        {
-            echo $section["sectionId"]."=".$section["sectionHash"]."
-";
-        }
-        $sectionsHashData = ob_get_contents();
-        ob_end_clean();
-
         $data = <<<INFOCONTENT
 [externalId]
 0=$externalId
 
 [sections]
-$sectionsHashData
+
 INFOCONTENT;
 
         file_put_contents($infoPath."/infos.ini", $data);
-
-        //Add criterias for this machine
-        $this->_addLibCriteriasMachine($internalId);
 
     }
 
     /**
     * We create directory tree for criteria and internalId.
-    * @param int $internalId
+    * @param string $internalId
     */
-    private function _addLibCriteriasMachine($internalId)
+    public function addLibCriteriasMachine($internalId)
     {
         foreach($this->_possibleCriterias as $criteriaName => $criteriaValue)
         {
@@ -307,26 +294,40 @@ INFOCONTENT;
         if ($sectionsToRemove)
         {
 
+            $sectionsId = array();
+            
             foreach($sectionsToRemove as $sectionId => $hashSection)
             {
-                Hooks::removeSection($sectionId, $iniSections["externalId"][0]);
                 unset($iniSections["sections"][$sectionId]);
+                array_push($sectionsId, $sectionId);
             }
+            Hooks::removeSections($sectionsId);
         }
         if ($sectionsToAdd)
         {
 
+            $data = array();
+
             foreach($sectionsToAdd as $arrayId => $hashSection)
             {
-                $iniSections["sections"] = array_merge(array(
-                Hooks::addSection(
-                $iniSections["externalId"][0],
-                $xmlSections[$arrayId]['sectionName'],
-                $xmlSections[$arrayId]['sectionData'])
-                => $xmlSections[$arrayId]['sectionHash']),
-                $iniSections["sections"]);
+                array_push($data, array(
+                "sectionName"=>$xmlSections[$arrayId]['sectionName'],
+                "dataSection"=>$xmlSections[$arrayId]['sectionData'],
+                "externalId"=>$iniSections["externalId"][0]));
 
             }
+
+            $sectionsId = Hooks::addSections($data);
+
+            $sectionsToAddWithKeys = array_flip(array_combine($sectionsId, $sectionsToAdd));
+
+            $revIniSections = array_flip($iniSections["sections"]);
+            $revIniSections = array_merge(
+            $sectionsToAddWithKeys,
+            $revIniSections);
+
+            $iniSections["sections"] = array_flip($revIniSections);
+
         }
 
         if ($sectionsToAdd or $sectionsToRemove)

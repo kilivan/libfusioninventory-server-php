@@ -5,10 +5,9 @@
 interface IExistingHooks
 {
     public static function createMachine();
-    public static function addSection($externalId, $sectionName, $dataSection);
-    public static function removeSection($sectionId, $externalId);
+    public static function addSections($data);
+    public static function removeSections($sectionsId);
 }
-
 
 
 /**
@@ -17,6 +16,7 @@ interface IExistingHooks
 */
 class Hooks implements IExistingHooks
 {
+
     /**
     * Disable instance
     * @access private
@@ -35,33 +35,60 @@ class Hooks implements IExistingHooks
     public static function createMachine()
     {
         echo "machine created";
-        return uniqid();
+        $dbh = new PDO('sqlite:/home/taha/www/MyWebSite/inventory.sqlite3');
+        $date = date('d/m/y');
+        echo $date;
+        $stmt = $dbh->prepare("INSERT INTO machine (time) VALUES (:date)");
+        $stmt->bindParam(':date', $date);
+        $stmt->execute();
+        return $dbh->lastInsertId();
     }
 
     /**
-    * add a new section to the machine in an application
+    * add new sections to the machine in an application
     * @access public
-    * @param int $externalId
-    * @param string $sectionName
-    * @param array $dataSection
-    * @return int $sectionId
+    * @param array $data(externalId, sectionName, dataSection)
+    * @return array $sectionsId
     */
-    public static function addSection($externalId, $sectionName, $dataSection)
+    public static function addSections($data)
     {
-        echo "section created";
-        return uniqid();
+        echo "sections created";
+        $sectionsId = array();
+        $dbh = new PDO('sqlite:/home/taha/www/MyWebSite/inventory.sqlite3');
+
+        $dbh->beginTransaction();
+        foreach($data as $section)
+        {
+            $stmt = $dbh->prepare("INSERT INTO section (sectionName, sectionData, idmachine) VALUES (:sectionName, :dataSection, :externalId)");
+            $stmt->bindParam(':sectionName', $section['sectionName']);
+            $stmt->bindParam(':dataSection', $section['dataSection']);
+            $stmt->bindParam(':externalId', $section['externalId']);
+            $stmt->execute();
+            array_push($sectionsId,$dbh->lastInsertId());
+        }
+        $dbh->commit();
+
+        return $sectionsId;
     }
+
 
     /**
     * remove a machine's section in an application
     * @access public
-    * @param int $externalId
-    * @param string $sectionName
-    * @param array $dataSection
+    * @param array $sectionsId
     */
-    public static function removeSection($sectionId, $externalId)
+    public static function removeSections($sectionsId)
     {
-        echo "section removed";
+        echo "sections removed";
+        $dbh = new PDO('sqlite:/home/taha/www/MyWebSite/inventory.sqlite3');
+        $dbh->beginTransaction();
+        foreach($sectionsId as $sectionId)
+        {
+            $stmt = $dbh->prepare("DELETE FROM section WHERE idsection = :sectionId");
+            $stmt->bindParam(':sectionId', $sectionId);
+            $stmt->execute();
+        }
+        $dbh->commit();
     }
 
 }

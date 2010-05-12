@@ -35,7 +35,7 @@ class Hooks implements IExistingHooks
     public static function createMachine()
     {
         echo "machine created";
-        $dbh = new PDO('sqlite:/home/taha/www/MyWebSite/inventory.sqlite3');
+        $dbh = new PDO('sqlite:/home/taha/www/FusionLib/examples/MyWebSite/inventory.sqlite3');
         $date = date('d/m/y');
         echo $date;
         $stmt = $dbh->prepare("INSERT INTO machine (time) VALUES (:date)");
@@ -54,7 +54,7 @@ class Hooks implements IExistingHooks
     {
         echo "sections created";
         $sectionsId = array();
-        $dbh = new PDO('sqlite:/home/taha/www/MyWebSite/inventory.sqlite3');
+        $dbh = new PDO('sqlite:/home/taha/www/FusionLib/examples/MyWebSite/inventory.sqlite3');
 
         $dbh->beginTransaction();
         foreach($data as $section)
@@ -80,7 +80,7 @@ class Hooks implements IExistingHooks
     public static function removeSections($sectionsId)
     {
         echo "sections removed";
-        $dbh = new PDO('sqlite:/home/taha/www/MyWebSite/inventory.sqlite3');
+        $dbh = new PDO('sqlite:/home/taha/www/FusionLib/examples/MyWebSite/inventory.sqlite3');
         $dbh->beginTransaction();
         foreach($sectionsId as $sectionId)
         {

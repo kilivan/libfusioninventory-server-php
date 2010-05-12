@@ -60,8 +60,8 @@ class FusionLibServer
     public function start($actionName)
     {
 
-        //$simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"]));
-        $simpleXMLObj = simplexml_load_file("data/aofr.ocs");
+        $simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"]));
+        //$simpleXMLObj = simplexml_load_file("data/aofr.ocs");
 
         $action = ActionFactory::createAction($actionName);
         $action->checkConfigs($this->_configs);

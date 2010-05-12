@@ -120,7 +120,7 @@ RESPONSE;
             try {
                 $externalId = Hooks::createMachine();
 
-                $libData->addLibMachine($internalId, $externalId, $xmlSections);
+                $libData->addLibMachine($internalId, $externalId);
                 $libData->addLibCriteriasMachine($internalId);
 
                 $libData->updateLibMachine($xmlSections, $internalId);
@@ -144,11 +144,9 @@ RESPONSE;
         foreach($simpleXMLObj->CONTENT->children() as $section)
         {
             ob_start();
-            echo $section->getName();
             foreach ($section->children() as $data)
             {
-                echo $data->getName().": ".$data
-                ;
+                echo $data->getName().": ".$data."<br />";
             }
             $sectionData = ob_get_contents();
             ob_end_clean();

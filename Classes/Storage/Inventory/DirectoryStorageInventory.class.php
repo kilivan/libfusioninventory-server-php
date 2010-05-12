@@ -123,9 +123,8 @@ class DirectoryStorageInventory extends StorageInventory
     * We create directory tree for machine and store the externalId within YAML file.
     * @param string $internalId
     * @param $externalId
-    * @param $xmlHashSections
     */
-    public function addLibMachine($internalId, $externalId, $xmlSections)
+    public function addLibMachine($internalId, $externalId)
     {
         $infoPath = sprintf('%s/%s/%s/%s',
             $this->_configs["storageLocation"],

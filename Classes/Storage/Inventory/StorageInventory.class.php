@@ -28,7 +28,7 @@ abstract class StorageInventory
     protected $_configs;
 
     abstract function isMachineExist();
-    abstract function addLibMachine($internalId, $externalId, $xmlSections);
+    abstract function addLibMachine($internalId, $externalId);
     abstract function updateLibMachine($xmlSections, $internalId);
 
 }

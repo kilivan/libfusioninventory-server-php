@@ -30,13 +30,13 @@ class DirectoryStorageInventory extends StorageInventory
     */
     public function isMachineExist()
     {
-        $falseCriteriaNb=0;
+        $falseCriteriaNb=-1;
         $internalId;
 
-        foreach($this->_configs["criterias"]["items"] as $criteria)
+        foreach($this->_configs["criterias"] as $criteria)
         {
 
-            if($falseCriteriaNb == $this->_configs["criterias"]["maxFalse"])
+            if($falseCriteriaNb == $this->_configs["maxFalse"])
             {
                 return false;
             }
@@ -113,6 +113,7 @@ class DirectoryStorageInventory extends StorageInventory
             return $internalId[2];
         }
         else {
+            
             throw new Exception ("no avalaible criterias to compare");
         }
 
@@ -120,7 +121,7 @@ class DirectoryStorageInventory extends StorageInventory
     }
 
     /**
-    * We create directory tree for machine and store the externalId within YAML file.
+    * We create directory tree for machine and store the externalId within INI file.
     * @param string $internalId
     * @param $externalId
     */
@@ -294,7 +295,7 @@ INFOCONTENT;
         {
 
             $sectionsId = array();
-            
+
             foreach($sectionsToRemove as $sectionId => $hashSection)
             {
                 unset($iniSections["sections"][$sectionId]);

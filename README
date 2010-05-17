@@ -1,0 +1,14 @@
+ +----------------------------------------------------------------------+
+ | FusionLibServer provides a solution to process data from both OCS    |
+ | agents and Fusion agents.                                            |
+ | Users can easily retrieve data from these agents with hooks system.  |
+ +----------------------------------------------------------------------+
+
+- You have to correctly complete:
+configs.ini,
+Classes/Hooks.class.php
+
+- Give enough permission to www-data (apache) to write and read on data directory for inventory(default data in configs.ini)
+
+- URI Server: /path/to/FusionLib/main.php
+

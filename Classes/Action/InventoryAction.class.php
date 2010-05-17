@@ -38,8 +38,8 @@ class InventoryAction extends Action
         if(isset($configs["storageEngine"],
         $configs["storageLocation"],
         $configs["applicationName"],
-        $configs["criterias"]["maxFalse"],
-        $configs["criterias"]["items"]))
+        $configs["criterias"],
+        $configs["maxFalse"]))
         {
 
             if (!(in_array($configs["storageEngine"], array("Directory", "Database"))))
@@ -52,7 +52,7 @@ class InventoryAction extends Action
                 throw new Exception ("applicationName isn't a string");
             }
 
-            foreach($configs["criterias"]["items"] as $criteria)
+            foreach($configs["criterias"] as $criteria)
             {
                 if (!(in_array($criteria, $this->_possibleCriterias)))
                 {
@@ -60,10 +60,15 @@ class InventoryAction extends Action
                 }
             }
 
+            if ($configs["maxFalse"] < 0)
+            {
+                throw new Exception ("maxFalse must be at least 0");
+            }
+
             $this->_configs = $configs;
 
         } else {
-            throw new Exception ("you have to complete correctly configuration array");
+            throw new Exception ("you have to complete correctly configuration array for inventory");
         }
 
     }

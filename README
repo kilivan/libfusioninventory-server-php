@@ -6,7 +6,7 @@
 
 - You have to correctly complete:
 configs.ini,
-Classes/Hooks.class.php
+FusInvHooks.class.php
 
 - Give enough permission to www-data (apache) to write and read on data directory for inventory(default data in configs.ini)
 

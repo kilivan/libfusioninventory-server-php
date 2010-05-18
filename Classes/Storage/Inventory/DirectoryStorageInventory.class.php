@@ -287,7 +287,7 @@ INFOCONTENT;
         }
 
 
-        $sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
+	$sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
         $sectionsToRemove = array_diff($iniSections["sections"], $xmlHashSections);
 
         if ($sectionsToRemove)

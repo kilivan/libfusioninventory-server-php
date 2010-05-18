@@ -1,6 +1,4 @@
 <?php
-require_once dirname(__FILE__) . '/../Hooks.class.php';
-require_once dirname(__FILE__) . '/../Action.class.php';
 require_once dirname(__FILE__) . '/../Storage/Inventory/StorageInventory.class.php';
 
 class InventoryAction extends Action

@@ -35,9 +35,9 @@ class Hooks implements IExistingHooks
     public static function createMachine()
     {
         echo "machine created";
-        $dbh = new PDO('sqlite:'.dirname(__FILE__).'/../examples/MyWebSite/inventory.sqlite3');
-
+        $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
         $stmt = $dbh->prepare("INSERT INTO machine (time) VALUES (:date)");
+
         $stmt->bindParam(':date', mktime());
         $stmt->execute();
         return $dbh->lastInsertId();
@@ -53,9 +53,10 @@ class Hooks implements IExistingHooks
     {
         echo "sections created";
         $sectionsId = array();
-        $dbh = new PDO('sqlite:'.dirname(__FILE__).'/../examples/MyWebSite/inventory.sqlite3');
+        $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
 
         $dbh->beginTransaction();
+
         foreach($data as $section)
         {
             $stmt = $dbh->prepare("INSERT INTO section (sectionName, sectionData, idmachine) VALUES (:sectionName, :dataSection, :externalId)");
@@ -66,6 +67,7 @@ class Hooks implements IExistingHooks
 
             array_push($sectionsId,$dbh->lastInsertId());
         }
+
         $dbh->commit();
 
         //notify changes
@@ -98,7 +100,7 @@ class Hooks implements IExistingHooks
     public static function removeSections($sectionsId)
     {
         echo "sections removed";
-        $dbh = new PDO('sqlite:'.dirname(__FILE__).'/../examples/MyWebSite/inventory.sqlite3');
+        $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
         $dbh->beginTransaction();
         foreach($sectionsId as $sectionId)
         {

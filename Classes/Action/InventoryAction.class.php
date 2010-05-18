@@ -5,7 +5,7 @@ require_once dirname(__FILE__) . '/../Storage/Inventory/StorageInventory.class.p
 
 class InventoryAction extends Action
 {
-    private $_configs;
+    private $_config;
     private $_possibleCriterias = array(
         "motherboardSerial",
         "assetTag",
@@ -22,37 +22,37 @@ class InventoryAction extends Action
         "drivesSerial");
 
     /**
-    * Configs :
+    * Config :
     * User defines:
     * - where and how the data will be store
     * - the application that will use the library
     * - the list of criterias and a margin for errors
-    * @param array $configs (
+    * @param array $config (
     * storageEngine => "directory",
     * storageLocation => "/data",
     * applicationName => "GLPI",$simpleXMLData
     * criterias => array(maxFalse => 0, items => array("asset tag", "motherboard serial")))
     */
-    public function checkConfigs($configs)
+    public function checkConfig($config)
     {
-        if(isset($configs["storageEngine"],
-        $configs["storageLocation"],
-        $configs["applicationName"],
-        $configs["criterias"],
-        $configs["maxFalse"]))
+        if(isset($config["storageEngine"],
+        $config["storageLocation"],
+        $config["applicationName"],
+        $config["criterias"],
+        $config["maxFalse"]))
         {
 
-            if (!(in_array($configs["storageEngine"], array("Directory", "Database"))))
+            if (!(in_array($config["storageEngine"], array("Directory", "Database"))))
             {
                 throw new Exception ("storageEngine that you specified doesn't exist");
             }
 
-            if (!(is_string($configs["applicationName"])))
+            if (!(is_string($config["applicationName"])))
             {
                 throw new Exception ("applicationName isn't a string");
             }
 
-            foreach($configs["criterias"] as $criteria)
+            foreach($config["criterias"] as $criteria)
             {
                 if (!(in_array($criteria, $this->_possibleCriterias)))
                 {
@@ -60,12 +60,12 @@ class InventoryAction extends Action
                 }
             }
 
-            if ($configs["maxFalse"] < 0)
+            if ($config["maxFalse"] < 0)
             {
                 throw new Exception ("maxFalse must be at least 0");
             }
 
-            $this->_configs = $configs;
+            $this->_config = $config;
 
         } else {
             throw new Exception ("you have to complete correctly configuration array for inventory");
@@ -105,7 +105,7 @@ RESPONSE;
     */
     protected function _startAction($simpleXMLObj)
     {
-        $libData = StorageInventoryFactory::createStorage($this->_configs, $simpleXMLObj);
+        $libData = StorageInventoryFactory::createStorage($this->_config, $simpleXMLObj);
 
         if ($internalId = $libData->isMachineExist())
         {

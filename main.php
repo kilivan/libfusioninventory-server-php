@@ -8,7 +8,6 @@ $fusionLibServer = FusionLibServer::getInstance();
 
 //We launch multiple action with its config
 foreach($configs['actions'] as $action){
-    $fusionLibServer->setConfigs($configs[$action]);
-    $fusionLibServer->start($action);
+    $fusionLibServer->setActionConfig($action, $configs[$action]);
 }
 ?>

@@ -23,7 +23,8 @@ require_once dirname(__FILE__) . '/Action.class.php';
 class FusionLibServer
 {
     protected static $_instance;
-    private $_configs;
+    private $_config;
+    private $_action;
     private $_possibleCriterias;
 
     /**
@@ -52,19 +53,22 @@ class FusionLibServer
     * Configs :
     * @param array $configs
     */
-    public function setConfigs($configs)
+    public function setActionConfig($action, $config)
     {
-        $this->_configs = $configs;
+        $this->_config = $config;
+        $this->_action = $action;
+
+        $this->_start();
     }
 
-    public function start($actionName)
+    private function _start()
     {
 
-        $simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"]));
-        //$simpleXMLObj = simplexml_load_file("data/aofr.ocs");
+        //$simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"]));
+        $simpleXMLObj = simplexml_load_file("data/aofr.ocs");
 
-        $action = ActionFactory::createAction($actionName);
-        $action->checkConfigs($this->_configs);
+        $action = ActionFactory::createAction($this->_action);
+        $action->checkConfig($this->_config);
         $action->setXMLData($simpleXMLObj);
 
     }

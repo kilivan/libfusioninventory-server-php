@@ -36,9 +36,9 @@ class Hooks implements IExistingHooks
     {
         echo "machine created";
         $dbh = new PDO('sqlite:'.dirname(__FILE__).'/../examples/MyWebSite/inventory.sqlite3');
-        $date = date('d/m/y');
+
         $stmt = $dbh->prepare("INSERT INTO machine (time) VALUES (:date)");
-        $stmt->bindParam(':date', $date);
+        $stmt->bindParam(':date', mktime());
         $stmt->execute();
         return $dbh->lastInsertId();
     }
@@ -63,9 +63,28 @@ class Hooks implements IExistingHooks
             $stmt->bindParam(':dataSection', $section['dataSection']);
             $stmt->bindParam(':externalId', $section['externalId']);
             $stmt->execute();
+
             array_push($sectionsId,$dbh->lastInsertId());
         }
         $dbh->commit();
+
+        //notify changes
+        $idmachine = $section['externalId'];
+        $res = $dbh->query("SELECT idchange FROM change WHERE idmachine=$idmachine");
+
+        if($res->fetch()==false){
+            $stmt = $dbh->prepare("INSERT INTO change (nbSectionsChanged, time, idmachine) VALUES (:nbSectionsChanged, :time, :externalId)");
+            $stmt->bindParam(':nbSectionsChanged', count($sectionsId));
+            $stmt->bindParam(':time', mktime());
+            $stmt->bindParam(':externalId', $idmachine);
+            $stmt->execute();
+        } else {
+            $stmt = $dbh->prepare("UPDATE change SET nbSectionsChanged=:nbSectionsChanged, time=:time WHERE idmachine=:externalId");
+            $stmt->bindParam(':nbSectionsChanged', count($sectionsId));
+            $stmt->bindParam(':time', mktime());
+            $stmt->bindParam(':externalId', $idmachine);
+            $stmt->execute();
+        }
 
         return $sectionsId;
     }

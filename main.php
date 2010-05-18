@@ -10,4 +10,5 @@ $fusionLibServer = FusionLibServer::getInstance();
 foreach($configs['actions'] as $action){
     $fusionLibServer->setActionConfig($action, $configs[$action]);
 }
+$fusionLibServer->start();
 ?>

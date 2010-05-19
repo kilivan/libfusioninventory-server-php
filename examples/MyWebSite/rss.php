@@ -1,12 +1,13 @@
 <?php
 /* Retrieve data from Sqlite Database */
 $dbh = new PDO('sqlite:inventory.sqlite3');
-$res = $dbh->query("SELECT * FROM change ORDER BY time DESC LIMIT 0,10");
+$res = $dbh->query("SELECT * FROM changeslog ORDER BY time DESC LIMIT 0,10");
 $lastChanges = array();
 while ($row = $res->fetch())
 {
     $lastChanges[$row['idchange']]['idmachine'] = $row['idmachine'];
-    $lastChanges[$row['idchange']]['nbSectionsChanged'] = $row['nbSectionsChanged'];
+    $lastChanges[$row['idchange']]['nbAddedSections'] = $row['nbAddedSections'];
+    $lastChanges[$row['idchange']]['nbRemovedSections'] = $row['nbRemovedSections'];
     $lastChanges[$row['idchange']]['time'] = $row['time'];
 }
 //data to XML
@@ -15,7 +16,7 @@ foreach($lastChanges as $iditem => $item)
 {
     echo "<item>";
     echo "  <title>Machine {$item['idmachine']}</title>";
-    echo "  <description>Number of Added and modified section:  {$item['nbSectionsChanged']}</description>";
+    echo "  <description>Number of: Added sections=>{$item['nbAddedSections']} Removed sections=>{$item['nbRemovedSections']}</description>";
     $date = date('D, d M Y H:i:s O', $item['time']);
     echo "  <pubDate>$date</pubDate>";
     echo "  <guid>http://localhost/FusionLib/examples/MyWebSite/index.php?idmachine={$item['idmachine']}</guid>";

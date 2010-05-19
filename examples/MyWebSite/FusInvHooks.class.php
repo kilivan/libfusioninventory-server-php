@@ -1,12 +1,14 @@
 <?php
+require_once "Logger.class.php";
+
 /**
 * Hooks Contract
 */
 interface IExistingHooks
 {
     public static function createMachine();
-    public static function addSections($data);
-    public static function removeSections($sectionsId);
+    public static function addSections($data, $idmachine);
+    public static function removeSections($idsections, $idmachine);
 }
 
 
@@ -40,16 +42,24 @@ class Hooks implements IExistingHooks
 
         $stmt->bindParam(':date', mktime());
         $stmt->execute();
-        return $dbh->lastInsertId();
+
+        $idmachine = $dbh->lastInsertId();
+
+        //changes log
+        $logger = new Logger($dbh);
+        $logger->notifyAddedMachine($idmachine);
+
+        return $idmachine;
     }
 
     /**
     * add new sections to the machine in an application
     * @access public
-    * @param array $data(externalId, sectionName, dataSection)
+    * @param array $data(sectionName, dataSection)
+    * @param int $idmachine
     * @return array $sectionsId
     */
-    public static function addSections($data)
+    public static function addSections($data, $idmachine)
     {
         echo "sections created";
         $sectionsId = array();
@@ -62,7 +72,7 @@ class Hooks implements IExistingHooks
             $stmt = $dbh->prepare("INSERT INTO section (sectionName, sectionData, idmachine) VALUES (:sectionName, :dataSection, :externalId)");
             $stmt->bindParam(':sectionName', $section['sectionName']);
             $stmt->bindParam(':dataSection', $section['dataSection']);
-            $stmt->bindParam(':externalId', $section['externalId']);
+            $stmt->bindParam(':externalId', $idmachine);
             $stmt->execute();
 
             array_push($sectionsId,$dbh->lastInsertId());
@@ -70,23 +80,9 @@ class Hooks implements IExistingHooks
 
         $dbh->commit();
 
-        //notify changes
-        $idmachine = $section['externalId'];
-        $res = $dbh->query("SELECT idchange FROM change WHERE idmachine=$idmachine");
-
-        if($res->fetch()==false){
-            $stmt = $dbh->prepare("INSERT INTO change (nbSectionsChanged, time, idmachine) VALUES (:nbSectionsChanged, :time, :externalId)");
-            $stmt->bindParam(':nbSectionsChanged', count($sectionsId));
-            $stmt->bindParam(':time', mktime());
-            $stmt->bindParam(':externalId', $idmachine);
-            $stmt->execute();
-        } else {
-            $stmt = $dbh->prepare("UPDATE change SET nbSectionsChanged=:nbSectionsChanged, time=:time WHERE idmachine=:externalId");
-            $stmt->bindParam(':nbSectionsChanged', count($sectionsId));
-            $stmt->bindParam(':time', mktime());
-            $stmt->bindParam(':externalId', $idmachine);
-            $stmt->execute();
-        }
+        //changes log
+        $logger = new Logger($dbh);
+        $logger->notifyAddedSection($idmachine, count($sectionsId));
 
         return $sectionsId;
     }
@@ -95,21 +91,27 @@ class Hooks implements IExistingHooks
     /**
     * remove a machine's section in an application
     * @access public
-    * @param array $sectionsId
+    * @param array $idsections
+    * @param int $idmachine
     */
-    public static function removeSections($sectionsId)
+    public static function removeSections($idsections, $idmachine)
     {
         echo "sections removed";
         $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
         $dbh->beginTransaction();
-        foreach($sectionsId as $sectionId)
+        foreach($idsections as $idsection)
         {
-            $stmt = $dbh->prepare("DELETE FROM section WHERE idsection = :sectionId");
-            $stmt->bindParam(':sectionId', $sectionId);
+            $stmt = $dbh->prepare("DELETE FROM section WHERE idsection = :idsection");
+            $stmt->bindParam(':idsection', $idsection);
             $stmt->execute();
         }
         $dbh->commit();
+
+        //changes log
+        $logger = new Logger($dbh);
+        $logger->notifyRemovedSection($idmachine, count($idsections));
     }
 
 }
+
 ?>

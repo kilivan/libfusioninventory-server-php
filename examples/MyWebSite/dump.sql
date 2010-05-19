@@ -6,9 +6,10 @@ idsection INTEGER PRIMARY KEY AUTOINCREMENT,
 sectionName NOT NULL,
 sectionData,
 idmachine INTEGER NOT NULL CONSTRAINT fk_idmachine REFERENCES machine(idmachine));
-CREATE TABLE change(
+CREATE TABLE changeslog(
 idchange INTEGER PRIMARY KEY AUTOINCREMENT,
-nbSectionsChanged INTEGER NOT NULL,
+nbAddedSections INTEGER,
+nbRemovedSections INTEGER,
 time,
 idmachine INTEGER NOT NULL CONSTRAINT fk2_idmachine REFERENCES machine (idmachine));
 COMMIT;

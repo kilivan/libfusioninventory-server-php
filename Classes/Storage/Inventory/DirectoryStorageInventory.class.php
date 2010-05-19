@@ -300,7 +300,7 @@ INFOCONTENT;
                 unset($iniSections["sections"][$sectionId]);
                 array_push($sectionsId, $sectionId);
             }
-            Hooks::removeSections($sectionsId);
+            Hooks::removeSections($sectionsId, $iniSections["externalId"][0]);
         }
         if ($sectionsToAdd)
         {
@@ -311,12 +311,11 @@ INFOCONTENT;
             {
                 array_push($data, array(
                 "sectionName"=>$xmlSections[$arrayId]['sectionName'],
-                "dataSection"=>$xmlSections[$arrayId]['sectionData'],
-                "externalId"=>$iniSections["externalId"][0]));
+                "dataSection"=>$xmlSections[$arrayId]['sectionData']));
 
             }
 
-            $sectionsId = Hooks::addSections($data);
+            $sectionsId = Hooks::addSections($data, $iniSections["externalId"][0]);
 
             $sectionsToAddWithKeys = array_flip(array_combine($sectionsId, $sectionsToAdd));
 

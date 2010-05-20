@@ -24,7 +24,7 @@ class FusionLibServer
 {
     protected static $_instance;
     private $_actionsConfigs = array();
-    private $_possibleCriterias;
+    private $_applicationName;
 
     /**
     * Disable instance
@@ -50,6 +50,7 @@ class FusionLibServer
 
     /**
     * Configs :
+    * @param string $action
     * @param array $configs
     */
     public function setActionConfig($action, $config)
@@ -58,16 +59,26 @@ class FusionLibServer
 
     }
 
+    /**
+    * Application name :
+    * @param string $applicationName
+    */
+    public function setApplicationName($applicationName)
+    {
+        $this->_applicationName = $applicationName;
+
+    }
+
     public function start()
     {
 
         $simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"]));
-        //$simpleXMLObj = simplexml_load_file("data/aofr.ocs");
+        //$simpleXMLObj = simplexml_load_file(dirname(__FILE__) ."/../data/aofr.ocs");
 
         foreach ($this->_actionsConfigs as $actionName => $config)
         {
             $action = ActionFactory::createAction($actionName);
-            $action->checkConfig($config);
+            $action->checkConfig($this->_applicationName, $config);
             $action->setXMLData($simpleXMLObj);
         }
 

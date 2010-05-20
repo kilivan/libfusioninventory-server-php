@@ -4,9 +4,10 @@ require_once dirname(__FILE__) . '/StorageInventory.class.php';
 class DirectoryStorageInventory extends StorageInventory
 {
 
-    public function __construct($configs, $simpleXMLData)
+    public function __construct($applicationName, $configs, $simpleXMLData)
     {
         $this->_configs=$configs;
+        $this->_applicationName=$applicationName;
 
         $this->_possibleCriterias = array(
         "motherboardSerial" => $simpleXMLData->CONTENT->BIOS->MOTHERBOARDSERIAL,
@@ -126,11 +127,7 @@ class DirectoryStorageInventory extends StorageInventory
     */
     public function addLibMachine($internalId, $externalId)
     {
-        $infoPath = sprintf('%s/%s/%s/%s',
-            $this->_configs["storageLocation"],
-            "machines",
-            $internalId,
-            $this->_configs["applicationName"]);
+        $infoPath = $this->_getInfoPathDSN($internalId);
 
         if(!is_dir($infoPath))
         {
@@ -204,7 +201,6 @@ INFOCONTENT;
                         if ($networks->VIRTUALDEV!=1 AND $networks->DESCRIPTION=="eth0")
                         {
                             $criteriaPath = $this->_getCriteriaDSN($criteriaName, $networks->MACADDR);
-
                             $internalIdPath = sprintf('%s/%s',
                             $criteriaPath,
                             $internalId);
@@ -237,12 +233,29 @@ INFOCONTENT;
     */
     private function _getCriteriaDSN($criteriaName, $criteriaValue)
     {
-        $dsn = sprintf('%s/%s/%s/%s/%s',
+        $dsn = sprintf('%s/../../../%s/%s/%s/%s/%s',
+        dirname(__FILE__),
         $this->_configs["storageLocation"],
         "criterias",
         $criteriaName,
-        $this->_configs["applicationName"],
+        $this->_applicationName,
         $criteriaValue);
+        return $dsn;
+    }
+
+    /**
+    * Determine data source name of machine
+    * @param string $internalId
+    * @return string $dsn
+    */
+    private function _getInfoPathDSN($internalId)
+    {
+        $dsn = sprintf('%s/../../../%s/%s/%s/%s',
+        dirname(__FILE__),
+        $this->_configs["storageLocation"],
+        "machines",
+        $internalId,
+        $this->_applicationName);
         return $dsn;
     }
 
@@ -253,11 +266,7 @@ INFOCONTENT;
     */
     private function _getINISections($internalId)
     {
-        $infoPath = sprintf('%s/%s/%s/%s',
-        $this->_configs["storageLocation"],
-        "machines",
-        $internalId,
-        $this->_configs["applicationName"]);
+        $infoPath = $this->_getInfoPathDSN($internalId);
 
         try
         {
@@ -287,7 +296,7 @@ INFOCONTENT;
         }
 
 
-	$sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
+        $sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
         $sectionsToRemove = array_diff($iniSections["sections"], $xmlHashSections);
 
         if ($sectionsToRemove)
@@ -349,11 +358,7 @@ INFOCONTENT;
 $sectionsHashData
 INFOCONTENT;
 
-            $infoPath = sprintf('%s/%s/%s/%s',
-            $this->_configs["storageLocation"],
-            "machines",
-            $internalId,
-            $this->_configs["applicationName"]);
+            $infoPath = $this->_getInfoPathDSN($internalId);
 
             file_put_contents($infoPath."/infos.ini", $data);
         }

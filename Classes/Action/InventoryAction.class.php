@@ -3,6 +3,7 @@ require_once dirname(__FILE__) . '/../Storage/Inventory/StorageInventory.class.p
 
 class InventoryAction extends Action
 {
+    private $_applicationName;
     private $_config;
     private $_possibleCriterias = array(
         "motherboardSerial",
@@ -25,17 +26,24 @@ class InventoryAction extends Action
     * - where and how the data will be store
     * - the application that will use the library
     * - the list of criterias and a margin for errors
+    * @param string $applicationName (GLPI,MyWebSite ...)
     * @param array $config (
     * storageEngine => "directory",
-    * storageLocation => "/data",
-    * applicationName => "GLPI",$simpleXMLData
+    * storageLocation => "data",
     * criterias => array(maxFalse => 0, items => array("asset tag", "motherboard serial")))
     */
-    public function checkConfig($config)
+    public function checkConfig($applicationName, $config)
     {
+
+        if (!(file_exists(dirname(__FILE__) ."/../../user/applications/$applicationName")))
+        {
+            throw new Exception ("Put your application in the user/applications directory");
+        }
+
+        $this->_applicationName = $applicationName;
+
         if(isset($config["storageEngine"],
         $config["storageLocation"],
-        $config["applicationName"],
         $config["criterias"],
         $config["maxFalse"]))
         {
@@ -43,11 +51,6 @@ class InventoryAction extends Action
             if (!(in_array($config["storageEngine"], array("Directory", "Database"))))
             {
                 throw new Exception ("storageEngine that you specified doesn't exist");
-            }
-
-            if (!(is_string($config["applicationName"])))
-            {
-                throw new Exception ("applicationName isn't a string");
             }
 
             foreach($config["criterias"] as $criteria)
@@ -103,11 +106,11 @@ RESPONSE;
     */
     protected function _startAction($simpleXMLObj)
     {
-        $libData = StorageInventoryFactory::createStorage($this->_config, $simpleXMLObj);
+        $libData = StorageInventoryFactory::createStorage($this->_applicationName, $this->_config, $simpleXMLObj);
 
         if ($internalId = $libData->isMachineExist())
         {
-            echo " machine exists $internalId";
+            //echo " machine exists $internalId";
 
             //Sections update
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
@@ -115,7 +118,7 @@ RESPONSE;
             $libData->updateLibMachine($xmlSections, $internalId);
         } else {
 
-            echo " machine doesn't exist";
+            //echo " machine doesn't exist";
 
             //We launch CreateMachine() hook and provide an InternalId
             $xmlSections = $this->_getXMLSections($simpleXMLObj);

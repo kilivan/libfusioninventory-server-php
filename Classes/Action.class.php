@@ -10,7 +10,7 @@ class ActionFactory
         $baseClass = 'Action';
         $targetClass = ucfirst($nameAction).$baseClass;
 
-        if (file_exists ($path='Classes/Action/'.$targetClass.'.class.php'))
+        if (file_exists ($path=dirname(__FILE__) .'/Action/'.$targetClass.'.class.php'))
         {
             require_once $path;
             if (class_exists($targetClass) && is_subclass_of($targetClass, $baseClass))
@@ -26,7 +26,7 @@ class ActionFactory
 abstract class Action
 {
     abstract function setXMLData($simpleXMLObj);
-    abstract function checkConfig($configs);
+    abstract function checkConfig($applicationName, $config);
     protected abstract function _startAction($data);
 }
 

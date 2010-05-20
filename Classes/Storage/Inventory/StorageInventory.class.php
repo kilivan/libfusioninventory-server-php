@@ -4,16 +4,16 @@
 */
 class StorageInventoryFactory
 {
-    public static function createStorage($configs, $simpleXMLData)
+    public static function createStorage($applicationName, $configs, $simpleXMLData)
     {
         $baseClass = 'StorageInventory';
         $targetClass = ucfirst($configs["storageEngine"]).$baseClass;
-        if (file_exists ($path='Classes/Storage/Inventory/'.$targetClass.'.class.php'))
+        if (file_exists ($path=dirname(__FILE__) .'/../../Storage/Inventory/'.$targetClass.'.class.php'))
         {
             require_once $path;
             if (class_exists($targetClass) && is_subclass_of($targetClass, $baseClass))
             {
-                return new $targetClass($configs, $simpleXMLData);
+                return new $targetClass($applicationName, $configs, $simpleXMLData);
             } else {
                 throw new Exception("The storage engine is not recognized.");
             }

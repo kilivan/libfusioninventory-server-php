@@ -19,7 +19,7 @@ foreach($lastChanges as $iditem => $item)
     echo "  <description>Number of: Added sections=>{$item['nbAddedSections']} Removed sections=>{$item['nbRemovedSections']}</description>";
     $date = date('D, d M Y H:i:s O', $item['time']);
     echo "  <pubDate>$date</pubDate>";
-    echo "  <guid>http://localhost/FusionLib/examples/MyWebSite/index.php?idmachine={$item['idmachine']}</guid>";
+    echo "  <guid>http://localhost/FusionLib/user/applications/MyWebSite/index.php?idmachine={$item['idmachine']}</guid>";
     echo "</item>";
 }
 $items = ob_get_contents();

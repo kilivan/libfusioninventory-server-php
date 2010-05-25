@@ -78,6 +78,10 @@ class InventoryAction extends Action
     {
         if($simpleXMLObj->QUERY == "PROLOG")
         {
+            if(isset($simpleXMLObj->DEVICEID))
+            {
+            }
+
             $this->_getXMLResponse();
         } else if($simpleXMLObj->QUERY == "INVENTORY"){
             $this->_startAction($simpleXMLObj);

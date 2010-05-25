@@ -250,12 +250,11 @@ INFOCONTENT;
     */
     private function _getInfoPathDSN($internalId)
     {
-        $dsn = sprintf('%s/../../../%s/%s/%s/%s',
+        $dsn = sprintf('%s/../../../%s/%s/%s',
         dirname(__FILE__),
         $this->_configs["storageLocation"],
         "machines",
-        $internalId,
-        $this->_applicationName);
+        $internalId);
         return $dsn;
     }
 

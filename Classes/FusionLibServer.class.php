@@ -71,7 +71,6 @@ class FusionLibServer
 
     public function start()
     {
-
         $simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"]));
         //$simpleXMLObj = simplexml_load_file(dirname(__FILE__) ."/../data/aofr.ocs");
 
@@ -81,7 +80,6 @@ class FusionLibServer
             $action->checkConfig($this->_applicationName, $config);
             $action->setXMLData($simpleXMLObj);
         }
-
     }
 }
 

@@ -157,6 +157,7 @@ INFOCONTENT;
     */
     public function addLibCriteriasMachine($internalId)
     {
+        $criteriasPathList = array();
         foreach($this->_possibleCriterias as $criteriaName => $criteriaValue)
         {
             if ($criteriaValue)
@@ -175,6 +176,8 @@ INFOCONTENT;
                             $internalId);
 
                             mkdir($internalIdPath,0777,true);
+
+                            array_push($criteriasPathList, $internalIdPath);
                         }
                     }
                     break;
@@ -191,6 +194,8 @@ INFOCONTENT;
                             $internalId);
 
                             mkdir($internalIdPath,0777,true);
+
+                            array_push($criteriasPathList, $internalIdPath);
                         }
                     }
                     break;
@@ -206,6 +211,8 @@ INFOCONTENT;
                             $internalId);
 
                             mkdir($internalIdPath,0777,true);
+
+                            array_push($criteriasPathList, $internalIdPath);
                         }
                     }
                     break;
@@ -218,10 +225,23 @@ INFOCONTENT;
                     $internalId);
 
                     mkdir($internalIdPath,0777,true);
+
+                    array_push($criteriasPathList, $internalIdPath);
+
                     break;
 
                 }
             }
+        }
+
+        $infoPath = $this->_getInfoPathDSN($internalId);
+
+        //criterias file, it will allow to remove criterias's machine
+        if (!file_exists($infoPath."/criterias"))
+        {
+            $criteriasFile = fopen($infoPath."/criterias","w");
+            fclose($criteriasFile);
+            file_put_contents($infoPath."/criterias", implode(",",$criteriasPathList));
         }
     }
 

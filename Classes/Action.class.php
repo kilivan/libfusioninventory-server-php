@@ -27,7 +27,6 @@ abstract class Action
 {
     abstract function setXMLData($simpleXMLObj);
     abstract function checkConfig($applicationName, $config);
-    protected abstract function _startAction($data);
 }
 
 ?>

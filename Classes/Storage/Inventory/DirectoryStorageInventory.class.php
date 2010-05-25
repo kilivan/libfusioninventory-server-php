@@ -177,7 +177,7 @@ INFOCONTENT;
 
                             mkdir($internalIdPath,0777,true);
 
-                            array_push($criteriasPathList, $internalIdPath);
+                            array_push($criteriasPathList, $criteriaPath);
                         }
                     }
                     break;
@@ -195,7 +195,7 @@ INFOCONTENT;
 
                             mkdir($internalIdPath,0777,true);
 
-                            array_push($criteriasPathList, $internalIdPath);
+                            array_push($criteriasPathList, $criteriaPath);
                         }
                     }
                     break;
@@ -212,7 +212,7 @@ INFOCONTENT;
 
                             mkdir($internalIdPath,0777,true);
 
-                            array_push($criteriasPathList, $internalIdPath);
+                            array_push($criteriasPathList, $criteriaPath);
                         }
                     }
                     break;
@@ -226,7 +226,7 @@ INFOCONTENT;
 
                     mkdir($internalIdPath,0777,true);
 
-                    array_push($criteriasPathList, $internalIdPath);
+                    array_push($criteriasPathList, $criteriaPath);
 
                     break;
 

@@ -76,13 +76,21 @@ class InventoryAction extends Action
 
     function setXMLData($simpleXMLObj)
     {
+        session_start();
         if($simpleXMLObj->QUERY == "PROLOG")
         {
-            if(isset($simpleXMLObj->DEVICEID))
+            if(isset($simpleXMLObj->OLD_DEVICEID))
             {
+                $deviceIdPath = dirname(__FILE__) ."/../../hardware/{$simpleXMLObj->DEVICEID}";
+                $oldDeviceIdPath = dirname(__FILE__) ."/../../hardware/{$simpleXMLObj->OLD_DEVICEID}";
+                if(file_exists($oldDeviceIdPath))
+                {
+                    rename($oldDeviceIdPath,$deviceIdPath);
+                }
             }
 
             $this->_getXMLResponse();
+
         } else if($simpleXMLObj->QUERY == "INVENTORY"){
             $this->_startAction($simpleXMLObj);
         }
@@ -114,7 +122,7 @@ RESPONSE;
 
         if ($internalId = $libData->isMachineExist())
         {
-            //echo " machine exists $internalId";
+            echo " machine exists $internalId";
 
             //Sections update
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
@@ -122,11 +130,12 @@ RESPONSE;
             $libData->updateLibMachine($xmlSections, $internalId);
         } else {
 
-            //echo " machine doesn't exist";
+            echo " machine doesn't exist";
 
             //We launch CreateMachine() hook and provide an InternalId
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
             $internalId = uniqid();
+            mkdir(dirname(__FILE__) ."/../../hardware/{$simpleXMLObj->DEVICEID}/$internalId",0777,true);
             try {
                 $externalId = Hooks::createMachine();
 

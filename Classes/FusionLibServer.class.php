@@ -74,12 +74,48 @@ class FusionLibServer
         $simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"]));
         //$simpleXMLObj = simplexml_load_file(dirname(__FILE__) ."/../data/aofr.ocs");
 
-        foreach ($this->_actionsConfigs as $actionName => $config)
+        if($simpleXMLObj->QUERY == "PROLOG")
         {
-            $action = ActionFactory::createAction($actionName);
-            $action->checkConfig($this->_applicationName, $config);
-            $action->setXMLData($simpleXMLObj);
+            if(isset($simpleXMLObj->OLD_DEVICEID))
+            {
+                $deviceIdPath = dirname(__FILE__) ."/../hardware/{$simpleXMLObj->DEVICEID}";
+                $oldDeviceIdPath = dirname(__FILE__) ."/../hardware/{$simpleXMLObj->OLD_DEVICEID}";
+                if(file_exists($oldDeviceIdPath))
+                {
+                    rename($oldDeviceIdPath,$deviceIdPath);
+                }
+            }
+
+            $this->_getXMLResponse($this->_actionsConfigs);
         }
+        else
+        {
+            foreach ($this->_actionsConfigs as $actionName => $config)
+            {
+                if ($simpleXMLObj->QUERY == strtoupper($actionName))
+                {
+                    $action = ActionFactory::createAction($actionName);
+                    $action->checkConfig($this->_applicationName, $config);
+                    $action->startAction($simpleXMLObj);
+                }
+            }
+        }
+
+    }
+
+    private function _getXMLResponse($actionsConfigs)
+    {
+
+        $response = <<<RESPONSE
+<REPLY>
+  <RESPONSE>SEND</RESPONSE>
+  <PROLOG_FREQ>1</PROLOG_FREQ>
+</REPLY>
+RESPONSE;
+        $dom = new DOMDocument();
+        $dom->loadXML($response);
+        //TODO: add options to response
+        echo gzcompress($dom->saveXML());
     }
 }
 

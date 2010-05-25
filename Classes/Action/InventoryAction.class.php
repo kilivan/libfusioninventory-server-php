@@ -74,49 +74,13 @@ class InventoryAction extends Action
 
     }
 
-    function setXMLData($simpleXMLObj)
-    {
-        session_start();
-        if($simpleXMLObj->QUERY == "PROLOG")
-        {
-            if(isset($simpleXMLObj->OLD_DEVICEID))
-            {
-                $deviceIdPath = dirname(__FILE__) ."/../../hardware/{$simpleXMLObj->DEVICEID}";
-                $oldDeviceIdPath = dirname(__FILE__) ."/../../hardware/{$simpleXMLObj->OLD_DEVICEID}";
-                if(file_exists($oldDeviceIdPath))
-                {
-                    rename($oldDeviceIdPath,$deviceIdPath);
-                }
-            }
-
-            $this->_getXMLResponse();
-
-        } else if($simpleXMLObj->QUERY == "INVENTORY"){
-            $this->_startAction($simpleXMLObj);
-        }
-    }
-
-    private function _getXMLResponse()
-    {
-        $response = <<<RESPONSE
-<REPLY>
-  <RESPONSE>SEND</RESPONSE>
-  <PROLOG_FREQ>1</PROLOG_FREQ>
-</REPLY>
-RESPONSE;
-        $dom = new DOMDocument();
-        $dom->loadXML($response);
-        //TODO: add options to response
-        echo gzcompress($dom->saveXML());
-    }
-
 
 
     /**
     * Inventory process
     * @param simpleXML $simpleXMLObj
     */
-    protected function _startAction($simpleXMLObj)
+    public function startAction($simpleXMLObj)
     {
         $libData = StorageInventoryFactory::createStorage($this->_applicationName, $this->_config, $simpleXMLObj);
 

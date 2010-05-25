@@ -25,8 +25,8 @@ class ActionFactory
 
 abstract class Action
 {
-    abstract function setXMLData($simpleXMLObj);
     abstract function checkConfig($applicationName, $config);
+    abstract function startAction($simpleXMLObj);
 }
 
 ?>

@@ -1,5 +1,6 @@
 <?php
 require_once dirname(__FILE__) . '/../Storage/Inventory/StorageInventory.class.php';
+require_once dirname(__FILE__) . '/MyException.class.php';
 
 class InventoryAction extends Action
 {
@@ -37,7 +38,7 @@ class InventoryAction extends Action
 
         if (!(file_exists(dirname(__FILE__) ."/../../user/applications/$applicationName")))
         {
-            throw new Exception ("Put your application in the user/applications directory");
+            throw new MyException ("Put your application in the user/applications directory");
         }
 
         $this->_applicationName = $applicationName;
@@ -50,26 +51,26 @@ class InventoryAction extends Action
 
             if (!(in_array($config["storageEngine"], array("Directory", "Database"))))
             {
-                throw new Exception ("storageEngine that you specified doesn't exist");
+                throw new MyException ("storageEngine that you specified doesn't exist");
             }
 
             foreach($config["criterias"] as $criteria)
             {
                 if (!(in_array($criteria, $this->_possibleCriterias)))
                 {
-                    throw new Exception ("an criteria that you specified doesn't exist");
+                    throw new MyException ("an criteria that you specified doesn't exist");
                 }
             }
 
             if ($config["maxFalse"] < 0)
             {
-                throw new Exception ("maxFalse must be at least 0");
+                throw new MyException ("maxFalse must be at least 0");
             }
 
             $this->_config = $config;
 
         } else {
-            throw new Exception ("you have to complete correctly configuration array for inventory");
+            throw new MyException ("you have to complete correctly configuration array for inventory");
         }
 
     }
@@ -107,7 +108,7 @@ class InventoryAction extends Action
                 $libData->addLibCriteriasMachine($internalId);
 
                 $libData->updateLibMachine($xmlSections, $internalId);
-            } catch (Exception $e) {
+            } catch (MyException $e) {
                 echo 'created machine stage: error';
             }
         }

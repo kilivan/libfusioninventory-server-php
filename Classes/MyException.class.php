@@ -4,7 +4,7 @@ class MyException extends Exception
 {
     function __construct($msg)
     {
-        $log = new Logger(dirname(__FILE__) . '/../Logs');
+        $log = new Logger(dirname(__FILE__) . '/Logs');
         $log->notifyExceptionMessage($msg);
         parent::__construct($msg);
     }

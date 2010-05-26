@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__FILE__) . '/../../MyException.class.php';
 /**
 * We manage storage engines here
 */
@@ -15,7 +16,7 @@ class StorageInventoryFactory
             {
                 return new $targetClass($applicationName, $configs, $simpleXMLData);
             } else {
-                throw new Exception("The storage engine is not recognized.");
+                throw new MyException("The storage engine is not recognized.");
             }
         }
     }

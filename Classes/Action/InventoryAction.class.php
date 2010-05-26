@@ -1,6 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../Storage/Inventory/StorageInventory.class.php';
-require_once dirname(__FILE__) . '/MyException.class.php';
+require_once dirname(__FILE__) . '/../MyException.class.php';
+require_once dirname(__FILE__) . '/../Logger.class.php';
 
 class InventoryAction extends Action
 {
@@ -83,19 +84,22 @@ class InventoryAction extends Action
     */
     public function startAction($simpleXMLObj)
     {
+        $log = new Logger(dirname(__FILE__) . '/../../Logs');
+
         $libData = StorageInventoryFactory::createStorage($this->_applicationName, $this->_config, $simpleXMLObj);
 
         if ($internalId = $libData->isMachineExist())
         {
-            echo " machine exists $internalId";
+            $log->notifyDebugMessage("Machine $internalId already exists");
 
             //Sections update
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
-
             $libData->updateLibMachine($xmlSections, $internalId);
+
+            $log->notifyDebugMessage("Machine $internalId: All sections updated");
         } else {
 
-            echo " machine doesn't exist";
+            $log->notifyDebugMessage("Machine doesn't exist");
 
             //We launch CreateMachine() hook and provide an InternalId
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
@@ -107,7 +111,12 @@ class InventoryAction extends Action
                 $libData->addLibMachine($internalId, $externalId);
                 $libData->addLibCriteriasMachine($internalId);
 
+                $log->notifyDebugMessage("Machine $internalId created");
+
                 $libData->updateLibMachine($xmlSections, $internalId);
+
+                $log->notifyDebugMessage("Machine $internalId: All sections created");
+
             } catch (MyException $e) {
                 echo 'created machine stage: error';
             }

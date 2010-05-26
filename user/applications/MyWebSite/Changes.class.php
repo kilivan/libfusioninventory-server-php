@@ -1,5 +1,5 @@
 <?php
-class Logger
+class Changes
 {
 
     private $_dbh;
@@ -20,7 +20,8 @@ class Logger
     {
         $stmt = $this->_dbh->prepare("UPDATE changeslog SET nbAddedSections=:nbAddedSections, time=:time WHERE idmachine=:idmachine");
         $stmt->bindParam(':nbAddedSections', $nbAddedSections);
-        $stmt->bindParam(':time', mktime());
+        $timestamp = time();
+        $stmt->bindParam(':time', $timestamp);
         $stmt->bindParam(':idmachine', $idmachine);
         $stmt->execute();
 
@@ -30,7 +31,8 @@ class Logger
     {
         $stmt = $this->_dbh->prepare("UPDATE changeslog SET nbRemovedSections=:nbRemovedSections, time=:time WHERE idmachine=:idmachine");
         $stmt->bindParam(':nbRemovedSections', $nbRemovedSections);
-        $stmt->bindParam(':time', mktime());
+        $timestamp = time();
+        $stmt->bindParam(':time', $timestamp);
         $stmt->bindParam(':idmachine', $idmachine);
         $stmt->execute();
 

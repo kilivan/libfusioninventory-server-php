@@ -115,7 +115,7 @@ class DirectoryStorageInventory extends StorageInventory
             return $internalId[2];
         }
         else {
-            throw new Exception ("no avalaible criterias to compare");
+            throw new MyException ("no avalaible criterias to compare");
         }
 
 

@@ -1,11 +1,12 @@
 <?php
-require_once "Logger.class.php";
+require_once "Changes.class.php";
 
 /**
 * Hooks Contract
 */
 interface IExistingHooks
 {
+    /* Inventory */
     public static function createMachine();
     public static function addSections($data, $idmachine);
     public static function removeSections($idsections, $idmachine);
@@ -39,14 +40,15 @@ class Hooks implements IExistingHooks
         $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
         $stmt = $dbh->prepare("INSERT INTO machine (time) VALUES (:date)");
 
-        $stmt->bindParam(':date', mktime());
+        $timestamp = time();
+        $stmt->bindParam(':date', $timestamp);
         $stmt->execute();
 
         $idmachine = $dbh->lastInsertId();
 
         //changes log
-        $logger = new Logger($dbh);
-        $logger->notifyAddedMachine($idmachine);
+        $changes = new Changes($dbh);
+        $changes->notifyAddedMachine($idmachine);
 
         return $idmachine;
     }
@@ -79,8 +81,8 @@ class Hooks implements IExistingHooks
         $dbh->commit();
 
         //changes log
-        $logger = new Logger($dbh);
-        $logger->notifyAddedSection($idmachine, count($sectionsId));
+        $changes = new Changes($dbh);
+        $changes->notifyAddedSection($idmachine, count($sectionsId));
 
         return $sectionsId;
     }
@@ -105,8 +107,8 @@ class Hooks implements IExistingHooks
         $dbh->commit();
 
         //changes log
-        $logger = new Logger($dbh);
-        $logger->notifyRemovedSection($idmachine, count($idsections));
+        $changes = new Changes($dbh);
+        $changes->notifyRemovedSection($idmachine, count($idsections));
     }
 
 }

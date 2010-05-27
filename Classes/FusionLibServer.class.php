@@ -109,6 +109,10 @@ class FusionLibServer
 <REPLY>
   <RESPONSE>SEND</RESPONSE>
   <PROLOG_FREQ>1</PROLOG_FREQ>
+  <OPTION>
+    <NAME>PING</NAME>
+    <PARAM ID="3456" />
+  </OPTION>
 </REPLY>
 RESPONSE;
         $dom = new DOMDocument();

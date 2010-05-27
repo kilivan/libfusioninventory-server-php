@@ -1,7 +1,5 @@
 <?php
 require_once dirname(__FILE__) . '/../Storage/Inventory/StorageInventory.class.php';
-require_once dirname(__FILE__) . '/../MyException.class.php';
-require_once dirname(__FILE__) . '/../Logger.class.php';
 
 class InventoryAction extends Action
 {

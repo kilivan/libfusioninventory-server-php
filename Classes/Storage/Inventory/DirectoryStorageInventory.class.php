@@ -1,6 +1,5 @@
 <?php
 require_once dirname(__FILE__) . '/StorageInventory.class.php';
-require_once dirname(__FILE__) . '/../../MyException.class.php';
 
 class DirectoryStorageInventory extends StorageInventory
 {

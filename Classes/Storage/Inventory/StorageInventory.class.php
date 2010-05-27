@@ -1,5 +1,4 @@
 <?php
-require_once dirname(__FILE__) . '/../../MyException.class.php';
 /**
 * We manage storage engines here
 */

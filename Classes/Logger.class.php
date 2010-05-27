@@ -12,19 +12,12 @@ class Logger
     const EXCEPT = 1;
     const DEBUG = 2;
 
-    private $_filePath;
+    private $_fileHandle;
 
     public function __construct($filePath)
     {
 
-        $this->_filePath = $filePath;
-
-        if(!file_exists($this->_filePath))
-        {
-            $new_handle = fopen($filePath, "x+");
-            fclose($new_handle);
-        }
-
+        $this->_fileHandle = fopen($filePath, "a");
 
         if (!is_writable($filePath))
         {
@@ -49,14 +42,13 @@ class Logger
     private function _log($line, $messageType)
     {
         $status = $this->_getStatus($messageType);
-        $iniContent = file_get_contents($this->_filePath);
-        file_put_contents($this->_filePath, "$status $line \n$iniContent");
+        fputs($this->_fileHandle, "$status $line \n");
     }
 
 
     private function _getStatus($messageType)
     {
-        $time = date("D, d M Y H:i:s O");
+        $time = date("d M Y - H:i:s");
 
         switch($messageType)
         {

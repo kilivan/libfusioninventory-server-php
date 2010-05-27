@@ -75,7 +75,6 @@ class InventoryAction extends Action
     }
 
 
-
     /**
     * Inventory process
     * @param simpleXML $simpleXMLObj
@@ -102,7 +101,7 @@ class InventoryAction extends Action
             //We launch CreateMachine() hook and provide an InternalId
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
             $internalId = uniqid();
-            mkdir(dirname(__FILE__) ."/../../hardware/{$simpleXMLObj->DEVICEID}/$internalId",0777,true);
+            //mkdir(dirname(__FILE__) ."/../../hardware/{$simpleXMLObj->DEVICEID}/$internalId",0777,true);
             try {
                 $externalId = Hooks::createMachine();
 

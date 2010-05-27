@@ -25,6 +25,7 @@ class FusionLibServer
     protected static $_instance;
     private $_actionsConfigs = array();
     private $_applicationName;
+    private $_prologFreq;
 
     /**
     * Disable instance
@@ -69,6 +70,15 @@ class FusionLibServer
 
     }
 
+    /**
+    * Prolog Frequence :
+    * @param int $prologFreq
+    */
+    public function setPrologFreq($prologFreq)
+    {
+        $this->_prologFreq = $prologFreq;
+    }
+
     public function start()
     {
         $simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"]));
@@ -76,6 +86,7 @@ class FusionLibServer
 
         if($simpleXMLObj->QUERY == "PROLOG")
         {
+/*
             if(isset($simpleXMLObj->OLD_DEVICEID))
             {
                 $deviceIdPath = dirname(__FILE__) ."/../hardware/{$simpleXMLObj->DEVICEID}";
@@ -85,8 +96,10 @@ class FusionLibServer
                     rename($oldDeviceIdPath,$deviceIdPath);
                 }
             }
+*/
+            $xmlResponse = $this->_getXMLResponse($this->_actionsConfigs);
 
-            $this->_getXMLResponse($this->_actionsConfigs);
+            echo $xmlResponse;
         }
         else
         {
@@ -104,11 +117,12 @@ class FusionLibServer
 
     private function _getXMLResponse($actionsConfigs)
     {
+        $prologFreq = $this->_prologFreq;
 
         $response = <<<RESPONSE
 <REPLY>
   <RESPONSE>SEND</RESPONSE>
-  <PROLOG_FREQ>1</PROLOG_FREQ>
+  <PROLOG_FREQ>$prologFreq</PROLOG_FREQ>
   <OPTION>
     <NAME>PING</NAME>
     <PARAM ID="3456" />
@@ -118,7 +132,7 @@ RESPONSE;
         $dom = new DOMDocument();
         $dom->loadXML($response);
         //TODO: add options to response
-        echo gzcompress($dom->saveXML());
+        return gzcompress($dom->saveXML());
     }
 }
 

@@ -94,7 +94,9 @@ class InventoryAction extends Action
             $libData->updateLibMachine($xmlSections, $internalId);
 
             $log->notifyDebugMessage("Machine $internalId: All sections updated");
-        } else {
+        }
+        else
+        {
 
             $log->notifyDebugMessage("Machine doesn't exist");
 
@@ -113,11 +115,13 @@ class InventoryAction extends Action
                 $libData->updateLibMachine($xmlSections, $internalId);
 
                 $log->notifyDebugMessage("Machine $internalId: All sections created");
-
             } catch (MyException $e) {
                 echo 'created machine stage: error';
             }
         }
+
+        $xmlResponse = $this->_getSecondXMLResponse();
+        echo $xmlResponse;
     }
 
 
@@ -148,6 +152,26 @@ class InventoryAction extends Action
             "sectionData" => $sectionData)));
         }
         return $xmlSections;
+    }
+
+    /**
+    * send second response to agent
+    */
+    private function _getSecondXMLResponse()
+    {
+        $response = <<<RESPONSE
+<REPLY>
+<RESPONSE>ACCOUNT_UPDATE</RESPONSE>
+<ACCOUNTINFO>
+<KEYVALUE>NA</KEYVALUE>
+<KEYNAME>TAG</KEYNAME>
+</ACCOUNTINFO>
+</REPLY>
+RESPONSE;
+        $dom = new DOMDocument();
+        $dom->loadXML($response);
+
+        return gzcompress($dom->saveXML());
     }
 
 }

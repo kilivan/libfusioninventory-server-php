@@ -115,14 +115,15 @@ class FusionLibServer
         }
     }
 
+    /**
+    * send first response to agent
+    * @param array $actionsConfigs
+    */
     private function _getXMLResponse($actionsConfigs)
     {
-        $prologFreq = $this->_prologFreq;
-
         $response = <<<RESPONSE
 <REPLY>
   <RESPONSE>SEND</RESPONSE>
-  <PROLOG_FREQ>$prologFreq</PROLOG_FREQ>
   <OPTION>
     <NAME>PING</NAME>
     <PARAM ID="3456" />
@@ -131,6 +132,10 @@ class FusionLibServer
 RESPONSE;
         $dom = new DOMDocument();
         $dom->loadXML($response);
+
+        $prologfreq = $dom->createElement("PROLOG_FREQ", $this->_prologFreq);
+        $dom->documentElement->appendChild($prologfreq);
+
         //TODO: add options to response
         return gzcompress($dom->saveXML());
     }

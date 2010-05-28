@@ -86,19 +86,7 @@ class FusionLibServer
 
         if($simpleXMLObj->QUERY == "PROLOG")
         {
-/*
-            if(isset($simpleXMLObj->OLD_DEVICEID))
-            {
-                $deviceIdPath = dirname(__FILE__) ."/../hardware/{$simpleXMLObj->DEVICEID}";
-                $oldDeviceIdPath = dirname(__FILE__) ."/../hardware/{$simpleXMLObj->OLD_DEVICEID}";
-                if(file_exists($oldDeviceIdPath))
-                {
-                    rename($oldDeviceIdPath,$deviceIdPath);
-                }
-            }
-*/
             $xmlResponse = $this->_getXMLResponse($this->_actionsConfigs);
-
             echo $xmlResponse;
         }
         else

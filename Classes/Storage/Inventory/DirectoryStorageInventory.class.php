@@ -299,7 +299,7 @@ INFOCONTENT;
     }
 
     /**
-    * Determine if there are sections changement and update
+    * Determine if there are sections changements and update
     * @param array $xmlSections
     * @param array $iniSections
     * @param int $internalId
@@ -307,14 +307,17 @@ INFOCONTENT;
     public function updateLibMachine($xmlSections, $internalId)
     {
 
+        // Retrieve all sections stored in info file
         $iniSections = $this->_getINISections($internalId);
+
+        // Retrieve all sections from xml file
         $xmlHashSections = array();
         foreach($xmlSections as $xmlSection)
         {
             array_push($xmlHashSections, $xmlSection["sectionHash"]);
         }
 
-
+        //Retrieve changes, sections to Add and sections to Remove
         $sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
         $sectionsToRemove = array_diff($iniSections["sections"], $xmlHashSections);
 
@@ -335,6 +338,7 @@ INFOCONTENT;
 
             $data = array();
 
+            //format data to send to hook createSection
             foreach($sectionsToAdd as $arrayId => $hashSection)
             {
                 array_push($data, array(
@@ -345,14 +349,23 @@ INFOCONTENT;
 
             $sectionsId = Hooks::addSections($data, $iniSections["externalId"][0]);
 
-            $sectionsToAddWithKeys = array_flip(array_combine($sectionsId, $sectionsToAdd));
+            $iniSectionsId = array();
 
-            $revIniSections = array_flip($iniSections["sections"]);
-            $revIniSections = array_merge(
-            $sectionsToAddWithKeys,
-            $revIniSections);
+            //Retrieve ini section id
+            foreach($iniSections["sections"] as $sId => $hashSection)
+            {
+                array_push($iniSectionsId,$sId);
+            }
 
-            $iniSections["sections"] = array_flip($revIniSections);
+            $allSectionsId = array_merge(
+            $iniSectionsId,
+            $sectionsId);
+
+            $iniSections["sections"] = array_merge (
+            $iniSections["sections"],
+            $sectionsToAdd);
+
+            $iniSections["sections"] = array_combine($allSectionsId, $iniSections["sections"]);
 
         }
 

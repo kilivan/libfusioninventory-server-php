@@ -85,6 +85,8 @@ class InventoryAction extends Action
 
         $libData = StorageInventoryFactory::createStorage($this->_applicationName, $this->_config, $simpleXMLObj);
 
+        $log->notifyDebugMessage("-- INVENTORY ACTION START --");
+
         if ($internalId = $libData->isMachineExist())
         {
             $log->notifyDebugMessage("Machine $internalId already exists");
@@ -103,7 +105,7 @@ class InventoryAction extends Action
             //We launch CreateMachine() hook and provide an InternalId
             $xmlSections = $this->_getXMLSections($simpleXMLObj);
             $internalId = uniqid();
-            //mkdir(dirname(__FILE__) ."/../../hardware/{$simpleXMLObj->DEVICEID}/$internalId",0777,true);
+
             try {
                 $externalId = Hooks::createMachine();
 
@@ -140,11 +142,12 @@ class InventoryAction extends Action
             ob_start();
             foreach ($section->children() as $data)
             {
-                echo $data->getName().": ".$data."<br />";
+                echo $data->getName()." = ".$data."<br />";
             }
             $sectionData = ob_get_contents();
             ob_end_clean();
 
+            //sectionId initialization, we will affect id after hook createSection return value.
             array_push($xmlSections, (array(
             "sectionId" => 0,
             "sectionHash" => md5($sectionData),

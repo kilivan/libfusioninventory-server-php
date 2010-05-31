@@ -39,15 +39,6 @@ class DataFilter
             default:
             break;
         }
-/*
-        foreach($this->_datasToFilterList as $dataToFilter)
-        {
-            if($section->getName == $dataToFilter['section'])
-            {
-                switch($dataToFilter['section'])
-            }
-        }
-        */
     }
 
     /**
@@ -57,16 +48,34 @@ class DataFilter
     */
     private static function _filterFromPCIID($pciid)
     {
-        echo "X";
+        $pciidArray = explode(":", $pciid);
+        $vendor = $pciidArray[0];
+        $device = $pciidArray[1];
+
+        $pciFile = fopen(dirname(__FILE__)."/pci.ids","r");
+        fclose($pciFile);
     }
 
+    /**
+    * filter from usbid
+    * @access private
+    * @param string $usbid
+    */
     private static function _filterFromUSBID($usbid)
     {
+        $usbFile = fopen(dirname(__FILE__)."/usb.ids","r");
+        fclose($usbFile);
     }
 
+    /**
+    * filter from macaddr
+    * @access private
+    * @param string $macaddr
+    */
     private static function _filterFromMACADDR($macaddr)
     {
-        echo "O";
+        $ouiFile = fopen(dirname(__FILE__)."/oui.txt","r");
+        fclose($ouiFile);
     }
 
 }

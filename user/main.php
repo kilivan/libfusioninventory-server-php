@@ -4,7 +4,7 @@ require_once dirname(__FILE__) ."/../Classes/FusionLibServer.class.php";
 require_once dirname(__FILE__) ."/../Classes/MyException.class.php";
 require_once dirname(__FILE__) ."/../Classes/Logger.class.php";
 
-$configs = parse_ini_file("user/configs.ini", true);
+$configs = parse_ini_file(dirname(__FILE__) ."/configs.ini", true);
 
 if (file_exists ($path=dirname(__FILE__) ."/applications/{$configs['application']['name']}/FusInvHooks.class.php"))
 {

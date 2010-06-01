@@ -29,6 +29,31 @@ class Hooks implements IExistingHooks
     {
     }
 
+    private static function _createDatabase()
+    {
+        if (!file_exists(dirname(__FILE__).'/inventory.sqlite3'))
+        {
+
+            $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
+            $dbh->beginTransaction();
+            $dbh->query('CREATE TABLE machine(idmachine INTEGER PRIMARY KEY AUTOINCREMENT, time)');
+
+            $dbh->query('CREATE TABLE section(
+            idsection INTEGER PRIMARY KEY AUTOINCREMENT,
+            sectionName NOT NULL,
+            sectionData,
+            idmachine INTEGER NOT NULL CONSTRAINT fk_idmachine REFERENCES machine(idmachine))');
+
+            $dbh->query('CREATE TABLE changeslog(
+            idchange INTEGER PRIMARY KEY AUTOINCREMENT,
+            nbAddedSections INTEGER,
+            nbRemovedSections INTEGER,
+            time,
+            idmachine INTEGER NOT NULL CONSTRAINT fk2_idmachine REFERENCES machine (idmachine))');
+            $dbh->commit();
+
+        }
+    }
 
     /**
     * create a new machine in an application
@@ -37,6 +62,9 @@ class Hooks implements IExistingHooks
     */
     public static function createMachine()
     {
+
+        self::_createDatabase();
+
         $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
         $stmt = $dbh->prepare("INSERT INTO machine (time) VALUES (:date)");
 
@@ -51,6 +79,7 @@ class Hooks implements IExistingHooks
         $changes->notifyAddedMachine($idmachine);
 
         return $idmachine;
+
     }
 
     /**
@@ -62,6 +91,7 @@ class Hooks implements IExistingHooks
     */
     public static function addSections($data, $idmachine)
     {
+
         $sectionsId = array();
         $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
 
@@ -85,6 +115,7 @@ class Hooks implements IExistingHooks
         $changes->notifyAddedSection($idmachine, count($sectionsId));
 
         return $sectionsId;
+
     }
 
 
@@ -96,6 +127,7 @@ class Hooks implements IExistingHooks
     */
     public static function removeSections($idsections, $idmachine)
     {
+
         $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
         $dbh->beginTransaction();
         foreach($idsections as $idsection)
@@ -109,6 +141,7 @@ class Hooks implements IExistingHooks
         //changes log
         $changes = new Changes($dbh);
         $changes->notifyRemovedSection($idmachine, count($idsections));
+
     }
 
 }

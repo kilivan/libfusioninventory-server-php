@@ -14,7 +14,7 @@ class DataFilter
     */
     public static function filter($section)
     {
-        $log = new Logger(dirname(__FILE__) . '/../../../data/logs/logs');
+        $log = new Logger('logs');
         switch($section->getName())
         {
             case 'CONTROLLERS':

@@ -82,7 +82,7 @@ class InventoryAction extends Action
     */
     public function startAction($simpleXMLObj)
     {
-        $log = new Logger(dirname(__FILE__) . '/../../data/logs/logs');
+        $log = new Logger('logs');
 
         $libData = StorageInventoryFactory::createStorage($this->_applicationName, $this->_config, $simpleXMLObj);
 
@@ -125,6 +125,8 @@ class InventoryAction extends Action
 
         $xmlResponse = $this->_getSecondXMLResponse();
         echo $xmlResponse;
+
+         $log->notifyDebugMessage("-- INVENTORY ACTION END --");
     }
 
 

@@ -306,7 +306,7 @@ INFOCONTENT;
     */
     public function updateLibMachine($xmlSections, $internalId)
     {
-        $log = new Logger(dirname(__FILE__) . '/../../../data/logs/logs');
+        $log = new Logger('logs');
         // Retrieve all sections stored in info file
         $iniSections = $this->_getINISections($internalId);
 

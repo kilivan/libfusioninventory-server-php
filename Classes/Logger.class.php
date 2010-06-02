@@ -14,14 +14,19 @@ class Logger
 
     private $_fileHandle;
 
-    public function __construct($filePath)
+    public function __construct($fileName)
     {
-
-        $this->_fileHandle = fopen($filePath, "a");
-
-        if (!is_writable($filePath))
+        $filePath = dirname(__FILE__)."/../data/logs/";
+        if(!file_exists(dirname(__FILE__)."/../data/logs/"))
         {
-            throw new Exception("$filePath isn't writable. Check permissions.");
+            mkdir(dirname(__FILE__)."/../data/logs/",0777,true);
+        }
+
+        $this->_fileHandle = fopen($filePath.$fileName, "a");
+
+        if (!is_writable($filePath.$fileName))
+        {
+            throw new Exception("$filePath.$fileName isn't writable. Check permissions.");
         }
 
     }

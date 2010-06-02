@@ -306,7 +306,7 @@ INFOCONTENT;
     */
     public function updateLibMachine($xmlSections, $internalId)
     {
-
+        $log = new Logger(dirname(__FILE__) . '/../../../data/logs/logs');
         // Retrieve all sections stored in info file
         $iniSections = $this->_getINISections($internalId);
 
@@ -323,7 +323,6 @@ INFOCONTENT;
 
         if ($sectionsToRemove)
         {
-
             $sectionsId = array();
 
             foreach($sectionsToRemove as $sectionId => $hashSection)
@@ -332,6 +331,8 @@ INFOCONTENT;
                 array_push($sectionsId, $sectionId);
             }
             Hooks::removeSections($sectionsId, $iniSections["externalId"][0]);
+
+            $log->notifyDebugMessage(count($sectionsToRemove)." section(s) removed");
         }
         if ($sectionsToAdd)
         {
@@ -348,6 +349,8 @@ INFOCONTENT;
             }
 
             $sectionsId = Hooks::addSections($data, $iniSections["externalId"][0]);
+
+            $log->notifyDebugMessage(count($sectionsToAdd)." section(s) added");
 
             $iniSectionsId = array();
 

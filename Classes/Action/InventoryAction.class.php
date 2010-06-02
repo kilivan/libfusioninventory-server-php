@@ -82,7 +82,7 @@ class InventoryAction extends Action
     */
     public function startAction($simpleXMLObj)
     {
-        $log = new Logger(dirname(__FILE__) . '/../../Logs');
+        $log = new Logger(dirname(__FILE__) . '/../../data/logs/logs');
 
         $libData = StorageInventoryFactory::createStorage($this->_applicationName, $this->_config, $simpleXMLObj);
 
@@ -138,17 +138,21 @@ class InventoryAction extends Action
 
         $xmlSections = array();
 
-        // We have to filter some data from agent
+
         $sectionsToFilter = array (
+        'USBDEVICES',
         'CONTROLLERS',
         'NETWORKS');
 
         foreach($simpleXMLObj->CONTENT->children() as $section)
         {
+
             if(in_array($section->getName(), $sectionsToFilter))
             {
                 DataFilter::filter($section);
             }
+
+
             ob_start();
             foreach ($section->children() as $data)
             {

@@ -17,23 +17,37 @@ class DataFilter
         switch($section->getName())
         {
             case 'CONTROLLERS':
-                foreach ($section->children() as $data)
+                if(isset($section->PCIID) AND $section->PCIID != '')
                 {
-                    if($data->getName() == 'PCIID' and $data != '')
+                    $manufacturer = self::_getDataFromPCIID($section->PCIID);
+                    $section->MANUFACTURER = $manufacturer;
+                }
+
+            break;
+
+            case 'NETWORKS':
+                if(isset($section->MACADDR) AND $section->MACADDR != '')
+                {
+                    //Mac address is locally or universal ?
+                    $msByte = substr($section->MACADDR, 0, 2);
+                    $msBin = decbin(hexdec($msByte));
+                    if (substr($msBin, -2, 1) != 1)
                     {
-                        self::_filterFromPCIID($data);
+                        //second bit isn't 1, the mac address isn't locally
+                        $manufacturer = self::_getDataFromMACADDR($section->MACADDR);
+                        $section->addChild('MANUFACTURER', $manufacturer);
                     }
                 }
             break;
 
-            case 'NETWORKS':
-                foreach ($section->children() as $data)
+            case 'USBDEVICES':
+                if(isset($section->VENDORID) AND $section->VENDORID != ''
+                AND isset($section->PRODUCTID))
                 {
-                    if($data->getName() == 'MACADDR' and $data != '')
-                    {
-                        self::_filterFromMACADDR($data);
-                    }
+                    $manufacturer = self::_getDataFromUSBID($section->VENDORID, $section->PRODUCTID);
+                    $section->addChild('MANUFACTURER', $manufacturer);
                 }
+
             break;
 
             default:
@@ -42,41 +56,78 @@ class DataFilter
     }
 
     /**
-    * filter from pciid
+    * get manufacturer from pciid
     * @access private
     * @param string $pciid
     */
-    private static function _filterFromPCIID($pciid)
+    private static function _getDataFromPCIID($pciid)
     {
         $pciidArray = explode(":", $pciid);
-        $vendor = $pciidArray[0];
-        $device = $pciidArray[1];
+        $vendorId = $pciidArray[0];
+        $deviceId = $pciidArray[1];
 
-        $pciFile = fopen(dirname(__FILE__)."/pci.ids","r");
-        fclose($pciFile);
+        $dataPath = sprintf('%s/%s/%s/%s/%s',
+        dirname(__FILE__),
+        "SourceDataFilter",
+        "pciids",
+        $vendorId,
+        "$deviceId.info");
+
+        $dataArray = explode("\n", file_get_contents($dataPath));
+        $vendorName = $dataArray[0];
+        $deviceName = $dataArray[1];
+
+        $manufacturer = "$vendorName $deviceName";
+
+        return $manufacturer;
+
     }
 
     /**
-    * filter from usbid
-    * @access private
-    * @param string $usbid
-    */
-    private static function _filterFromUSBID($usbid)
-    {
-        $usbFile = fopen(dirname(__FILE__)."/usb.ids","r");
-        fclose($usbFile);
-    }
-
-    /**
-    * filter from macaddr
+    * get data from macaddr
     * @access private
     * @param string $macaddr
     */
-    private static function _filterFromMACADDR($macaddr)
+    private static function _getDataFromMACADDR($macaddr)
     {
-        $ouiFile = fopen(dirname(__FILE__)."/oui.txt","r");
-        fclose($ouiFile);
+
+        $macOUI = substr($macaddr, 0, 8);
+
+        $dataPath = sprintf('%s/%s/%s/%s',
+        dirname(__FILE__),
+        "SourceDataFilter",
+        "oui",
+        strtoupper($macOUI));
+
+        $manufacturer = scandir($dataPath);
+
+        return $manufacturer[2];
     }
+
+    /**
+    * get data from vendorid and productid
+    * @access private
+    * @param string $usbid
+    */
+    private static function _getDataFromUSBID($vendorId, $productId)
+    {
+
+        $dataPath = sprintf('%s/%s/%s/%s/%s',
+        dirname(__FILE__),
+        "SourceDataFilter",
+        "usbids",
+        $vendorId,
+        "$productId.info");
+
+        $dataArray = explode("\n", file_get_contents($dataPath));
+        $vendorName = $dataArray[0];
+        $productName = $dataArray[1];
+
+        $manufacturer = "$vendorName $productName";
+
+        return $manufacturer;
+    }
+
 
 }
 

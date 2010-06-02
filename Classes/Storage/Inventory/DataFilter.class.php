@@ -18,7 +18,7 @@ class DataFilter
         switch($section->getName())
         {
             case 'CONTROLLERS':
-                if(!file_exists(dirname(__FILE__)."/SourceDataFilter/pci"))
+                if(!file_exists(dirname(__FILE__)."/SourceDataFilter/pciids"))
                 {
                     $log->notifyDebugMessage("You have to create tree folders for PCI");
                     return;
@@ -52,7 +52,7 @@ class DataFilter
             break;
 
             case 'USBDEVICES':
-                if(!file_exists(dirname(__FILE__)."/SourceDataFilter/usb"))
+                if(!file_exists(dirname(__FILE__)."/SourceDataFilter/usbids"))
                 {
                     $log->notifyDebugMessage("You have to create tree folders for USB");
                     return;

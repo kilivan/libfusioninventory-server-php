@@ -3,13 +3,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" type="text/css" href="Style/Style.css">
+<link rel="stylesheet" type="text/css" href="Style/Style2.css">
 <link rel="alternate" type="application/rss+xml" href="rss.php" />
 </head>
 
 <body>
 
-<div id="title"><a href='index.php'>My Web Site</a></div>
+<div id="title"><a href='index.php'><img src="Style/images/logo4.png" /></a></div>
 
 <div id="container">
 <div id="menu">

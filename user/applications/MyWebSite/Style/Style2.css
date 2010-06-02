@@ -4,9 +4,9 @@ body {
 
 /*** Title ***/
 #title{
-    text-align:center;
+    text-align:left;
     width:800px;
-    height:30px;
+    height:51px;
     background-color:#ddf29c;
 }
 /*End Title*/ 

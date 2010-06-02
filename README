@@ -8,7 +8,10 @@
 user/configs.ini,
 user/applications/{yourApplicationName}/FusInvHooks.class.php
 
-- Give enough permission to www-data (apache) to write and read on data directory for inventory(default data in configs.ini)
+- Give enough permission to www-data (apache) to write and read all folders in the library.
+
+- Launch /path/to/FusionLib/Classes/Storage/Inventory/SourceDataFilter/FilesToTreeFolder.php script
 
 - URI Server: /path/to/FusionLib/user/main.php
 
+-Ready to use application as an example : /path/to/FusionLib/user/applications/MyWebSite

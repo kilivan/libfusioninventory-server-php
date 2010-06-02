@@ -14,9 +14,15 @@ class DataFilter
     */
     public static function filter($section)
     {
+        $log = new Logger(dirname(__FILE__) . '/../../../data/logs/logs');
         switch($section->getName())
         {
             case 'CONTROLLERS':
+                if(!file_exists(dirname(__FILE__)."/SourceDataFilter/pci"))
+                {
+                    $log->notifyDebugMessage("You have to create tree folders for PCI");
+                    return;
+                }
                 if(isset($section->PCIID) AND $section->PCIID != '')
                 {
                     $manufacturer = self::_getDataFromPCIID($section->PCIID);
@@ -26,6 +32,11 @@ class DataFilter
             break;
 
             case 'NETWORKS':
+                if(!file_exists(dirname(__FILE__)."/SourceDataFilter/oui"))
+                {
+                    $log->notifyDebugMessage("You have to create tree folders for OUI");
+                    return;
+                }
                 if(isset($section->MACADDR) AND $section->MACADDR != '')
                 {
                     //Mac address is locally or universal ?
@@ -41,6 +52,11 @@ class DataFilter
             break;
 
             case 'USBDEVICES':
+                if(!file_exists(dirname(__FILE__)."/SourceDataFilter/usb"))
+                {
+                    $log->notifyDebugMessage("You have to create tree folders for USB");
+                    return;
+                }
                 if(isset($section->VENDORID) AND $section->VENDORID != ''
                 AND isset($section->PRODUCTID))
                 {

@@ -129,11 +129,10 @@ class InventoryAction extends Action
                 echo 'created machine stage: error';
             }
         }
-
-        $xmlResponse = $this->_getSecondXMLResponse();
-        echo $xmlResponse;
-
          $log->notifyDebugMessage("-- INVENTORY ACTION END --");
+
+         $xmlResponse = $this->_getActionXMLResponse();
+         echo $xmlResponse;
     }
 
 
@@ -183,7 +182,7 @@ class InventoryAction extends Action
     /**
     * send second response to agent
     */
-    private function _getSecondXMLResponse()
+    private function _getActionXMLResponse()
     {
         $response = <<<RESPONSE
 <REPLY>

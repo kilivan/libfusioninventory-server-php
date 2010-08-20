@@ -253,9 +253,8 @@ INFOCONTENT;
     */
     private function _getCriteriaDSN($criteriaName, $criteriaValue)
     {
-        $dsn = sprintf('%s/../../../%s/%s/%s/%s/%s',
-        dirname(__FILE__),
-        $this->_configs["storageLocation"],
+        $dsn = sprintf('%s/%s/%s',
+        LIBSERVERFUSIONINVENTORY_STORAGELOCATION,
         "criterias",
         $criteriaName,
         $this->_applicationName,
@@ -270,9 +269,8 @@ INFOCONTENT;
     */
     private function _getInfoPathDSN($internalId)
     {
-        $dsn = sprintf('%s/../../../%s/%s/%s',
-        dirname(__FILE__),
-        $this->_configs["storageLocation"],
+        $dsn = sprintf('%s/%s/%s',
+        LIBSERVERFUSIONINVENTORY_STORAGELOCATION,
         "machines",
         $internalId);
         return $dsn;

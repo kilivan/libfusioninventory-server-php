@@ -14,17 +14,16 @@ class Logger
 
     private $_fileHandle;
 
-    public function __construct($fileName)
+    public function __construct()
     {
-        $filePath = dirname(__FILE__)."/../data/logs/";
-        if(!file_exists(dirname(__FILE__)."/../data/logs/"))
+        if(!file_exists(LIBSERVERFUSIONINVENTORY_LOG_FILE))
         {
-            mkdir(dirname(__FILE__)."/../data/logs/",0777,true);
+            mkdir(LIBSERVERFUSIONINVENTORY_LOG_FILE,0777,true);
         }
 
-        $this->_fileHandle = fopen($filePath.$fileName, "a");
+        $this->_fileHandle = fopen(LIBSERVERFUSIONINVENTORY_LOG_FILE, "a");
 
-        if (!is_writable($filePath.$fileName))
+        if (!is_writable(LIBSERVERFUSIONINVENTORY_LOG_FILE))
         {
             throw new Exception("$filePath.$fileName isn't writable. Check permissions.");
         }

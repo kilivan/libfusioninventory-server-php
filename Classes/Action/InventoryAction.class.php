@@ -89,7 +89,7 @@ class InventoryAction extends Action
     */
     public function startAction($simpleXMLObj)
     {
-        $log = new Logger('logs');
+        $log = new Logger();
 
         $libData = StorageInventoryFactory::createStorage($this->_applicationName, $this->_config, $simpleXMLObj);
 

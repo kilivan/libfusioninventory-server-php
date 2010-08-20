@@ -320,7 +320,7 @@ INFOCONTENT;
         //Retrieve changes, sections to Add and sections to Remove
         $sectionsToAdd = array_diff($xmlHashSections, $iniSections["sections"]);
         $sectionsToRemove = array_diff($iniSections["sections"], $xmlHashSections);
-
+        $classhook = LIBSERVERFUSIONINVENTORY_HOOKS_CLASSNAME;
         if ($sectionsToRemove)
         {
             $sectionsId = array();
@@ -330,7 +330,8 @@ INFOCONTENT;
                 unset($iniSections["sections"][$sectionId]);
                 array_push($sectionsId, $sectionId);
             }
-            Hooks::removeSections($sectionsId, $iniSections["externalId"][0]);
+            
+            $classhook::removeSections($sectionsId, $iniSections["externalId"][0]);
 
             $log->notifyDebugMessage(count($sectionsToRemove)." section(s) removed");
         }
@@ -348,7 +349,7 @@ INFOCONTENT;
 
             }
 
-            $sectionsId = Hooks::addSections($data, $iniSections["externalId"][0]);
+            $sectionsId = $classhook::addSections($data, $iniSections["externalId"][0]);
 
             $log->notifyDebugMessage(count($sectionsToAdd)." section(s) added");
 

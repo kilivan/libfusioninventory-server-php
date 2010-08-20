@@ -115,7 +115,8 @@ class InventoryAction extends Action
             $internalId = uniqid();
 
             try {
-                $externalId = Hooks::createMachine();
+               $classhook = LIBSERVERFUSIONINVENTORY_HOOKS_CLASSNAME;
+                $externalId = $classhook::createMachine();
 
                 $libData->addLibMachine($internalId, $externalId);
                 $libData->addLibCriteriasMachine($internalId);

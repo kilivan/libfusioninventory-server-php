@@ -109,6 +109,10 @@ class DirectoryStorageInventory extends StorageInventory
                 }
             }
         }
+        if($falseCriteriaNb == $this->_configs["maxFalse"])
+        {
+            return false;
+        }
         if (isset($internalId[2]))
         {
             return $internalId[2];

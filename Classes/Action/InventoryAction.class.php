@@ -170,7 +170,7 @@ class InventoryAction extends Action
             //sectionId initialization, we will affect id after hook createSection return value.
             array_push($xmlSections, (array(
             "sectionId" => 0,
-            "sectionHash" => md5(extract($sectionData)),
+            "sectionHash" => md5(serialize($sectionData)),
             "sectionName" => $section->getName(),
             "sectionData" => $sectionData)));
         }

@@ -35,6 +35,7 @@ while ($row = $res->fetch())
 {
     echo "<dt>{$row['sectionName']}";
     echo "<dd><blockquote>{$row['sectionData']}</blockquote>";
+
 }
 echo "</dl>";
 echo "</fieldset>";

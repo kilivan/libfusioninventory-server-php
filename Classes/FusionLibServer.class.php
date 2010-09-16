@@ -79,12 +79,24 @@ class FusionLibServer
         $this->_prologFreq = $prologFreq;
     }
 
+    public function checkPermissions()
+    {
+        if (!is_writable(dirname(__FILE__) ."/../data")
+        OR !is_writable(dirname(__FILE__) ."/../user")
+        OR !is_writable(dirname(__FILE__) ."/../Classes"))
+        {
+            echo "Give permission to apache to write on data/ and user/ and Classes/ folder";
+            throw new MyException ("Give permission to apache to write on data/ and user/ and Classes/ folders");
+        }
+    }
+
     public function start()
     {
-       $simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"],'SimpleXMLElement', LIBXML_NOCDATA));
-        //$simpleXMLObj = simplexml_load_file(dirname(__FILE__) ."/../data/aofr.ocs");
-
         $log = new Logger();
+        $log->notifyDebugMessage("----- FUSION SERVER START -----");
+
+       //$simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"],'SimpleXMLElement', LIBXML_NOCDATA));
+        $simpleXMLObj = simplexml_load_file(dirname(__FILE__) ."/../data/aofr.ocs");
 
         if($simpleXMLObj->QUERY == "PROLOG")
         {
@@ -103,6 +115,8 @@ class FusionLibServer
                 }
             }
         }
+
+        $log->notifyDebugMessage("----- FUSION SERVER END -----");
     }
 
     /**

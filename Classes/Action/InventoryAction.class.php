@@ -35,14 +35,6 @@ class InventoryAction extends Action
     */
     public function checkConfig($applicationName, $config)
     {
-
-        if (!is_writable(dirname(__FILE__) ."/../../data")
-        OR !is_writable(dirname(__FILE__) ."/../../user")
-        OR !is_writable(dirname(__FILE__) ."/../../Classes"))
-        {
-            throw new MyException ("Give permission to apache to write on data/ and user/ and Classes/");
-        }
-
         if (!(file_exists(dirname(__FILE__) ."/../../user/applications/$applicationName")))
         {
             throw new MyException ("Put your application in the user/applications directory");
@@ -79,7 +71,6 @@ class InventoryAction extends Action
         } else {
             throw new MyException ("you have to complete correctly configuration array for inventory");
         }
-
     }
 
 

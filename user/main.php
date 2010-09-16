@@ -25,5 +25,6 @@ $fusionLibServer->setPrologFreq($configs['prolog']['freq']);
 foreach($configs['actions'] as $action){
     $fusionLibServer->setActionConfig($action, $configs[$action]);
 }
+$fusionLibServer->checkPermissions();
 $fusionLibServer->start();
 ?>

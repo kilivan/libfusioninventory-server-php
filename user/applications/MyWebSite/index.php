@@ -9,7 +9,7 @@
 
 <body>
 
-<div id="title"><a href='index.php'><img src="Style/images/logo4.png" /></a></div>
+<div id="title"><a href='index.php'><img src="Style/images/logo5.png" width="150" height="50"/></a></div>
 
 <div id="container">
 <div id="menu">

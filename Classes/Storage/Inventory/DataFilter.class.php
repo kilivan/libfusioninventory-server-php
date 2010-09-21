@@ -20,8 +20,9 @@ class DataFilter
             case 'CONTROLLERS':
                 if(!file_exists(dirname(__FILE__)."/SourceDataFilter/pciids"))
                 {
-                    $log->notifyDebugMessage("You have to create tree folders for PCI");
-                    return;
+                    $log->notifyDebugMessage("You have to create tree folders for PCI, no filter for CONTROLLERS");
+                    $nofilter = 'CONTROLLERS';
+                    return $nofilter;
                 }
                 if(isset($section->PCIID) AND $section->PCIID != '')
                 {
@@ -34,8 +35,9 @@ class DataFilter
             case 'NETWORKS':
                 if(!file_exists(dirname(__FILE__)."/SourceDataFilter/oui"))
                 {
-                    $log->notifyDebugMessage("You have to create tree folders for OUI");
-                    return;
+                    $log->notifyDebugMessage("You have to create tree folders for OUI, no filter for NETWORKS");
+                    $nofilter = 'NETWORKS';
+                    return $nofilter;
                 }
                 if(isset($section->MACADDR) AND $section->MACADDR != '')
                 {
@@ -54,14 +56,16 @@ class DataFilter
             case 'USBDEVICES':
                 if(!file_exists(dirname(__FILE__)."/SourceDataFilter/usbids"))
                 {
-                    $log->notifyDebugMessage("You have to create tree folders for USB");
-                    return;
+                    $log->notifyDebugMessage("You have to create tree folders for USB, no filter for USB DEVICES");
+                    $nofilter = 'USBDEVICES';
+                    return $nofilter;
                 }
                 if(isset($section->VENDORID) AND $section->VENDORID != ''
                 AND isset($section->PRODUCTID))
                 {
                     $manufacturer = self::_getDataFromUSBID($section->VENDORID, $section->PRODUCTID);
                     $section->addChild('MANUFACTURER', $manufacturer);
+                    
                 }
 
             break;
@@ -69,6 +73,7 @@ class DataFilter
             default:
             break;
         }
+        return false;
     }
 
     /**

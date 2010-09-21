@@ -149,7 +149,17 @@ class InventoryAction extends Action
 
             if(in_array($section->getName(), $sectionsToFilter))
             {
-                DataFilter::filter($section);
+                $nofilter = DataFilter::filter($section);
+                //if the folder for the filter doesn't exist, delete this element from array.
+                if($nofilter){
+                    foreach($sectionsToFilter as $fKey => $fValue)
+                    {
+                        if ($fValue == $nofilter)
+                        {
+                            unset($sectionsToFilter[$fKey]);
+                        }
+                    }
+                }
             }
 
             $sectionData = array();

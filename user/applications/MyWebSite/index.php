@@ -34,7 +34,15 @@ echo "<dl>";
 while ($row = $res->fetch())
 {
     echo "<dt>{$row['sectionName']}";
-    echo "<dd><blockquote>{$row['sectionData']}</blockquote>";
+    $datasArray = unserialize($row['sectionData']);
+    ob_start();
+    foreach($datasArray as $dataName => $dataValue)
+    {
+        echo "$dataName = $dataValue <br />";
+    }
+    $datas = ob_get_contents();
+    ob_end_clean();
+    echo "<dd><blockquote>$datas</blockquote>";
 }
 echo "</dl>";
 echo "</fieldset>";

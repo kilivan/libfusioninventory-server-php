@@ -131,7 +131,7 @@ class InventoryAction extends Action
     /**
     * get all sections with its hash,name and data from XML file
     * @param simpleXML $simpleXMLObj
-    * @return array $xmlSections (hash,name and data)
+    * @return array $xmlSections (hash,name and serialized data)
     */
     private function _getXMLSections($simpleXMLObj)
     {
@@ -169,11 +169,12 @@ class InventoryAction extends Action
             }
 
             //sectionId initialization, we will affect id after hook createSection return value.
+            $serializedSectionData = serialize($sectionData);
             array_push($xmlSections, (array(
             "sectionId" => 0,
-            "sectionHash" => md5(serialize($sectionData)),
+            "sectionHash" => md5($serializedSectionData),
             "sectionName" => $section->getName(),
-            "sectionData" => $sectionData)));
+            "sectionData" => $serializedSectionData)));
         }
         return $xmlSections;
     }

@@ -1,5 +1,6 @@
 <?php
 require_once dirname(__FILE__) . '/StorageInventory.class.php';
+define("LIBSERVERFUSIONINVENTORY_STORAGELOCATION",dirname(__FILE__)."/../../../".$configs['storageLocation']);
 
 class DirectoryStorageInventory extends StorageInventory
 {

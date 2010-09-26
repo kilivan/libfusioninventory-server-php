@@ -21,7 +21,7 @@ class Logger
             mkdir(LIBSERVERFUSIONINVENTORY_LOG_FILE,0777,true);
         }
 
-        $this->_fileHandle = fopen(LIBSERVERFUSIONINVENTORY_LOG_FILE, "a");
+        $this->_fileHandle = fopen(LIBSERVERFUSIONINVENTORY_LOG_FILE.'/logs', "a");
 
         if (!is_writable(LIBSERVERFUSIONINVENTORY_LOG_FILE))
         {

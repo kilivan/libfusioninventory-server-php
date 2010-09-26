@@ -6,6 +6,7 @@ class DirectoryStorageInventory extends StorageInventory
 
     public function __construct($applicationName, $configs, $simpleXMLData)
     {
+
         $this->_configs=$configs;
         $this->_applicationName=$applicationName;
 
@@ -315,8 +316,26 @@ INFOCONTENT;
         // Retrieve all sections from xml file
         $xmlHashSections = array();
         foreach($xmlSections as $xmlSection)
-        {
-            array_push($xmlHashSections, $xmlSection["sectionHash"]);
+        {  
+            foreach ($this->_config['SOFTWARES'] as $sectionN)
+            {
+                if(($xmlSection['sectionName']) == $sectionN)
+                {
+                    array_push($xmlHashSections['SOFTWARES'], $xmlSection["sectionHash"]);
+                    continue;
+                }
+            }
+
+            foreach ($this->_config['HARDWARES'] as $sectionN)
+            {
+                if(($xmlSection['sectionName']) == $sectionN)
+                {
+                    array_push($xmlHashSections['HARDWARES'], $xmlSection["sectionHash"]);
+                    continue;
+                }
+            }
+
+            array_push($xmlHashSections['DEFAULT'], $xmlSection["sectionHash"]);
         }
 
         //Retrieve changes, sections to Add and sections to Remove

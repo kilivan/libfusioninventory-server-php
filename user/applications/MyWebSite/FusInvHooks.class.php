@@ -33,6 +33,7 @@ class Hooks implements IExistingHooks
     {
         if (!file_exists(dirname(__FILE__).'/inventory.sqlite3'))
         {
+            try {
 
             $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
             $dbh->beginTransaction();
@@ -51,6 +52,10 @@ class Hooks implements IExistingHooks
             time,
             idmachine INTEGER NOT NULL CONSTRAINT fk2_idmachine REFERENCES machine (idmachine))');
             $dbh->commit();
+
+            } catch (Exception $e) {
+                die($e->getMessage());
+            }
 
         }
     }
@@ -87,32 +92,52 @@ class Hooks implements IExistingHooks
     * @access public
     * @param array $data(sectionName, dataSection)
     * @param int $idmachine
-    * @return array $sectionsId
+    * @return array $sectionsId (associative array / section type)
     */
     public static function addSections($data, $idmachine)
     {
 
+        $sectionsIdSoftware = array();
+        $sectionsIdHardware = array();
         $sectionsId = array();
+
         $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
 
         $dbh->beginTransaction();
 
         foreach($data as $section)
         {
-            $stmt = $dbh->prepare("INSERT INTO section (sectionName, sectionData, idmachine) VALUES (:sectionName, :dataSection, :externalId)");
-            $stmt->bindParam(':sectionName', $section['sectionName']);
-            $stmt->bindParam(':dataSection', $section['dataSection']);
-            $stmt->bindParam(':externalId', $idmachine);
-            $stmt->execute();
-
-            array_push($sectionsId,$dbh->lastInsertId());
+            switch($section['sectionName'])
+            {
+                case 'SOFTWARES':
+                // You can specify an table name for software section.
+                $stmt = $dbh->prepare("INSERT INTO section (sectionName, sectionData, idmachine) VALUES (:sectionName, :dataSection, :externalId)");
+                $stmt->bindParam(':sectionName', $section['sectionName']);
+                $stmt->bindParam(':dataSection', $section['dataSection']);
+                $stmt->bindParam(':externalId', $idmachine);
+                $stmt->execute();
+                array_push($sectionsIdSoftware,$dbh->lastInsertId());
+                break;
+                default:
+                // You can specify an table name for hardware section.
+                $stmt = $dbh->prepare("INSERT INTO section (sectionName, sectionData, idmachine) VALUES (:sectionName, :dataSection, :externalId)");
+                $stmt->bindParam(':sectionName', $section['sectionName']);
+                $stmt->bindParam(':dataSection', $section['dataSection']);
+                $stmt->bindParam(':externalId', $idmachine);
+                $stmt->execute();
+                array_push($sectionsIdHardware,$dbh->lastInsertId());
+                break;
+            }
         }
-
+        
         $dbh->commit();
 
         //changes log
         $changes = new Changes($dbh);
         $changes->notifyAddedSection($idmachine, count($sectionsId));
+
+        $sectionsId['SOFTWARE'] = $sectionsIdSoftware;
+        $sectionsId['HARDWARE'] = $sectionsIdHardware;
 
         return $sectionsId;
 

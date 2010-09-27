@@ -34,6 +34,10 @@ class Logger
     public function notifyExceptionMessage($line)
     {
         $this->_log($line, Logger::EXCEPT);
+        if(LIBSERVERFUSIONINVENTORY_PRINTERROR)
+        {
+            echo "\n $line";
+        }
     }
 
 

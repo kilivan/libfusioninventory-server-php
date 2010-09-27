@@ -85,7 +85,6 @@ class FusionLibServer
         OR !is_writable(dirname(__FILE__) ."/../user")
         OR !is_writable(dirname(__FILE__) ."/../Classes"))
         {
-            echo "Give permission to apache to write on data/ and user/ and Classes/ folder";
             throw new MyException ("Give permission to apache to write on data/ and user/ and Classes/ folders");
         }
     }

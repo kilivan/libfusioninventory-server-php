@@ -84,7 +84,7 @@ class InventoryAction extends Action
 
         $libData = StorageInventoryFactory::createStorage($this->_applicationName, $this->_config, $simpleXMLObj);
 
-        $log->notifyDebugMessage("-- INVENTORY ACTION START --");
+        $log->notifyDebugMessage("INVENTORY ACTION START");
 
         if ($internalId = $libData->isMachineExist())
         {
@@ -121,7 +121,7 @@ class InventoryAction extends Action
                 echo 'created machine stage: error';
             }
         }
-         $log->notifyDebugMessage("-- INVENTORY ACTION END --");
+         $log->notifyDebugMessage("INVENTORY ACTION END");
 
          $xmlResponse = $this->_getActionXMLResponse();
          echo $xmlResponse;

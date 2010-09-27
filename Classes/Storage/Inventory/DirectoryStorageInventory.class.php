@@ -317,26 +317,8 @@ INFOCONTENT;
         // Retrieve all sections from xml file
         $xmlHashSections = array();
         foreach($xmlSections as $xmlSection)
-        {  
-            foreach ($this->_config['SOFTWARES'] as $sectionN)
-            {
-                if(($xmlSection['sectionName']) == $sectionN)
-                {
-                    array_push($xmlHashSections['SOFTWARES'], $xmlSection["sectionHash"]);
-                    continue;
-                }
-            }
-
-            foreach ($this->_config['HARDWARES'] as $sectionN)
-            {
-                if(($xmlSection['sectionName']) == $sectionN)
-                {
-                    array_push($xmlHashSections['HARDWARES'], $xmlSection["sectionHash"]);
-                    continue;
-                }
-            }
-
-            array_push($xmlHashSections['DEFAULT'], $xmlSection["sectionHash"]);
+        {
+            array_push($xmlHashSections, $xmlSection["sectionHash"]);
         }
 
         //Retrieve changes, sections to Add and sections to Remove
@@ -361,7 +343,6 @@ INFOCONTENT;
         }
         if ($sectionsToAdd)
         {
-
             $data = array();
 
             //format data to send to hook createSection
@@ -398,7 +379,6 @@ INFOCONTENT;
                $log->notifyDebugMessage("Number of lines of array returne by hooks sections (add and remove) are not same with number of sections");
             }
             $iniSections["sections"] = array_combine($allSectionsId, $iniSections["sections"]);
-
         }
 
         if ($sectionsToAdd or $sectionsToRemove)

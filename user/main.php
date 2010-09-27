@@ -9,6 +9,7 @@ $configs = parse_ini_file(dirname(__FILE__) ."/configs.ini", true);
 define("LIBSERVERFUSIONINVENTORY_LOG_DIR",dirname(__FILE__)."/../data/logs");
 define("LIBSERVERFUSIONINVENTORY_LOG_FILE",dirname(__FILE__)."/../data/logs/logs");
 define("LIBSERVERFUSIONINVENTORY_HOOKS_CLASSNAME","Hooks");
+define("LIBSERVERFUSIONINVENTORY_PRINTERROR",$configs["application"]["printError"]);
 
 if (file_exists ($path=dirname(__FILE__) ."/applications/{$configs['application']['name']}/FusInvHooks.class.php"))
 {

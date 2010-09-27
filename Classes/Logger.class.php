@@ -27,12 +27,17 @@ class Logger
 
     public function notifyDebugMessage($line)
     {
+        //echo "\n $line";
         $this->_log($line, Logger::DEBUG);
     }
 
 
     public function notifyExceptionMessage($line)
     {
+        if(LIBSERVERFUSIONINVENTORY_PRINTERROR)
+        {
+            echo "\n $line";
+        }
         $this->_log($line, Logger::EXCEPT);
     }
 

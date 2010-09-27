@@ -81,12 +81,9 @@ class FusionLibServer
 
     public function checkPermissions()
     {
-        if (!is_writable(dirname(__FILE__) ."/../data")
-        OR !is_writable(dirname(__FILE__) ."/../user")
-        OR !is_writable(dirname(__FILE__) ."/../Classes"))
+        if (!is_writable(dirname(__FILE__) ."/../data"))
         {
-            echo "Give permission to apache to write on data/ and user/ and Classes/ folder";
-            throw new MyException ("Give permission to apache to write on data/ and user/ and Classes/ folders");
+            throw new MyException ("Give permission to apache to write on data/ folder");
         }
     }
 
@@ -98,6 +95,10 @@ class FusionLibServer
        //$simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"],'SimpleXMLElement', LIBXML_NOCDATA));
         $simpleXMLObj = simplexml_load_file(dirname(__FILE__) ."/../data/aofr.ocs");
 
+        if(!$simpleXMLObj)
+        {
+            throw new MyException ("Can't retrieve data from xml data sent by agent.");
+        }
         if($simpleXMLObj->QUERY == "PROLOG")
         {
             $xmlResponse = $this->_getXMLResponse($this->_actionsConfigs);

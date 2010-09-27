@@ -1,6 +1,5 @@
 <?php
 //Script to convert file data to tree folder
-define("LIBSERVERFUSIONINVENTORY_STORAGELOCATION",dirname(__FILE__)."/../../../".$configs['storageLocation']);
 
 function filePCItoTreeFolder()
 {

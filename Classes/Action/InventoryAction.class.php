@@ -138,12 +138,17 @@ class InventoryAction extends Action
 
         $xmlSections = array();
 
+        $sectionsToFilter = array();
+        if($this->_config["filter"])
+        {
+            array_push ($sectionsToFilter,
+            'USBDEVICES',
+            'CONTROLLERS',
+            'NETWORKS');
 
-        $sectionsToFilter = array (
-        'USBDEVICES',
-        'CONTROLLERS',
-        'NETWORKS');
-
+            
+            DataFilter::init();
+        }
         foreach($simpleXMLObj->CONTENT->children() as $section)
         {
 

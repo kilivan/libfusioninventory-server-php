@@ -7,6 +7,14 @@
 class DataFilter
 {
 
+    public static function init()
+    {
+        require_once dirname(__FILE__) . '/SourceDataFilter/FilesToTreeFolder.php';
+        filePCItoTreeFolder();
+        fileUSBtoTreeFolder();
+        fileOUItoTreeFolder();
+    }
+
     /**
     * get device from pciid
     * @access public
@@ -18,7 +26,7 @@ class DataFilter
         switch($section->getName())
         {
             case 'CONTROLLERS':
-                if(!file_exists(dirname(__FILE__)."/SourceDataFilter/pciids"))
+                if(!file_exists(LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/pciids"))
                 {
                     $log->notifyDebugMessage("You have to create tree folders for PCI, no filter for CONTROLLERS");
                     $nofilter = 'CONTROLLERS';
@@ -33,7 +41,7 @@ class DataFilter
             break;
 
             case 'NETWORKS':
-                if(!file_exists(dirname(__FILE__)."/SourceDataFilter/oui"))
+                if(!file_exists(LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/oui"))
                 {
                     $log->notifyDebugMessage("You have to create tree folders for OUI, no filter for NETWORKS");
                     $nofilter = 'NETWORKS';
@@ -54,7 +62,7 @@ class DataFilter
             break;
 
             case 'USBDEVICES':
-                if(!file_exists(dirname(__FILE__)."/SourceDataFilter/usbids"))
+                if(!file_exists(LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/usbids"))
                 {
                     $log->notifyDebugMessage("You have to create tree folders for USB, no filter for USB DEVICES");
                     $nofilter = 'USBDEVICES';
@@ -88,8 +96,8 @@ class DataFilter
         $deviceId = $pciidArray[1];
 
         $dataPath = sprintf('%s/%s/%s/%s/%s',
-        dirname(__FILE__),
-        "SourceDataFilter",
+        LIBSERVERFUSIONINVENTORY_STORAGELOCATION,
+        "DataFilter",
         "pciids",
         $vendorId,
         "$deviceId.info");
@@ -115,8 +123,8 @@ class DataFilter
         $macOUI = substr($macaddr, 0, 8);
 
         $dataPath = sprintf('%s/%s/%s/%s',
-        dirname(__FILE__),
-        "SourceDataFilter",
+        LIBSERVERFUSIONINVENTORY_STORAGELOCATION,
+        "DataFilter",
         "oui",
         strtoupper($macOUI));
 
@@ -134,8 +142,8 @@ class DataFilter
     {
 
         $dataPath = sprintf('%s/%s/%s/%s/%s',
-        dirname(__FILE__),
-        "SourceDataFilter",
+        LIBSERVERFUSIONINVENTORY_STORAGELOCATION,
+        "DataFilter",
         "usbids",
         $vendorId,
         "$productId.info");

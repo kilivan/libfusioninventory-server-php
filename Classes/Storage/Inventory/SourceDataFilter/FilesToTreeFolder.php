@@ -1,13 +1,11 @@
 <?php
 //Script to convert file data to tree folder
-
-filePCItoTreeFolder();
-fileUSBtoTreeFolder();
-fileOUItoTreeFolder();
-
+define("LIBSERVERFUSIONINVENTORY_STORAGELOCATION",dirname(__FILE__)."/../../../".$configs['storageLocation']);
 
 function filePCItoTreeFolder()
 {
+    if(!is_dir(LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/pciids"))
+    {
     $pciFile = fopen(dirname(__FILE__)."/pci.ids","r");
 
     while(!feof($pciFile))
@@ -20,9 +18,9 @@ function filePCItoTreeFolder()
             $vendorId = $stack[1];
             $vendorName = $stack[2];
 
-            if (!is_dir(dirname(__FILE__)."/pciids/$vendorId"))
+            if (!is_dir(LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/pciids/$vendorId"))
             {
-                mkdir (dirname(__FILE__)."/pciids/$vendorId",0777,true);
+                mkdir (LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/pciids/$vendorId",0777,true);
             }
         }
 
@@ -31,15 +29,18 @@ function filePCItoTreeFolder()
         {
             $deviceId = $stack[1];
             $deviceName=$stack[2];
-            $fd = fopen(dirname(__FILE__)."/pciids/$vendorId/$deviceId.info", 'w');
+            $fd = fopen(LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/pciids/$vendorId/$deviceId.info", 'w');
             fputs($fd, "$vendorName\n$deviceName");
             fclose ($fd);
         }
+    }
     }
 }
 
 function fileUSBtoTreeFolder()
 {
+    if(!is_dir(LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/usbids"))
+    {
     $usbFile = fopen(dirname(__FILE__)."/usb.ids","r");
 
     while(!feof($usbFile))
@@ -52,9 +53,9 @@ function fileUSBtoTreeFolder()
             $vendorId = $stack[1];
             $vendorName = $stack[2];
 
-            if (!is_dir(dirname(__FILE__)."/usbids/$vendorId"))
+            if (!is_dir(LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/usbids/$vendorId"))
             {
-                mkdir (dirname(__FILE__)."/usbids/$vendorId",0777,true);
+                mkdir (LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/usbids/$vendorId",0777,true);
             }
         }
 
@@ -63,15 +64,18 @@ function fileUSBtoTreeFolder()
         {
             $deviceId = $stack[1];
             $deviceName=$stack[2];
-            $fd = fopen(dirname(__FILE__)."/usbids/$vendorId/$deviceId.info", 'w');
+            $fd = fopen(LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/usbids/$vendorId/$deviceId.info", 'w');
             fputs($fd, "$vendorName\n$deviceName");
             fclose ($fd);
         }
+    }
     }
 }
 
 function fileOUItoTreeFolder()
 {
+    if(!is_dir(LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/oui"))
+    {
     $ouiFile = fopen(dirname(__FILE__)."/oui.txt","r");
 
     while(!feof($ouiFile))
@@ -86,12 +90,13 @@ function fileOUItoTreeFolder()
             $OUI = strtr($OUI, "-", ":");
             $organization = $stack[2];
 
-            if (!is_dir(dirname(__FILE__)."/oui/$OUI/$organization"))
+            if (!is_dir(LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/oui/$OUI/$organization"))
             {
-                mkdir (dirname(__FILE__)."/oui/$OUI/$organization",0777,true);
+                mkdir (LIBSERVERFUSIONINVENTORY_STORAGELOCATION."/DataFilter/oui/$OUI/$organization",0777,true);
             }
 
         }
+    }
     }
 }
 ?>

@@ -39,6 +39,10 @@ class Logger
             echo "\n $line";
         }
         $this->_log($line, Logger::EXCEPT);
+        if(LIBSERVERFUSIONINVENTORY_PRINTERROR)
+        {
+            echo "\n $line";
+        }
     }
 
 

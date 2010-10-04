@@ -83,11 +83,11 @@ class Hooks implements IExistingHooks
     /**
     * add new sections to the machine in an application
     * @access public
-    * @param array $data(sectionName, dataSection)
+    * @param array $datas(sectionName, dataSection)
     * @param int $idmachine
     * @return array $sectionsId
     */
-    public static function addSections($data, $idmachine)
+    public static function addSections($datas, $idmachine)
     {
         $sectionsId = array();
 
@@ -95,7 +95,7 @@ class Hooks implements IExistingHooks
 
         $dbh->beginTransaction();
 
-        foreach($data as $section)
+        foreach($datas as $section)
         {
             // You can specify an table name for software section.
             $stmt = $dbh->prepare("INSERT INTO section (sectionName, sectionData, idmachine) VALUES (:sectionName, :dataSection, :externalId)");
@@ -139,6 +139,30 @@ class Hooks implements IExistingHooks
         //changes log
         $changes = new Changes($dbh);
         $changes->notifyRemovedSection($idmachine, count($idsections));
+    }
+
+    /**
+    * update a machine's section
+    * @access public
+    * @param array $datas(sectionId, dataSection)
+    * @param int $idmachine
+    */
+    public static function updateSections($datas, $idmachine)
+    {
+        $dbh = new PDO('sqlite:'.dirname(__FILE__).'/inventory.sqlite3');
+
+        $dbh->beginTransaction();
+
+        foreach($datas as $section)
+        {
+            // You can specify an table name for software section.
+            $stmt = $dbh->prepare("UPDATE section SET sectionData = :dataSection WHERE idsection = :idsection");
+            $stmt->bindParam(':idsection', $section['sectionId']);
+            $stmt->bindParam(':dataSection', $section['dataSection']);
+            $stmt->execute();
+        }
+
+        $dbh->commit();
     }
 
 }

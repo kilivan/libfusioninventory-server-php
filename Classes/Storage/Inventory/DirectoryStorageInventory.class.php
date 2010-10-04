@@ -333,50 +333,89 @@ INFOCONTENT;
         // Retrieve all sections stored in info file
         $infoSections = $this->_getInfoSections($internalId);
         // Retrieve all sections from xml file
-        $serializedSections = array();
+        $serializedSectionsFromXML = array();
         foreach($xmlSections as $xmlSection)
         {
-            array_push($serializedSections, $xmlSection["sectionDatawName"]);
+            array_push($serializedSectionsFromXML, $xmlSection["sectionDatawName"]);
         }
 
         //Retrieve changes, sections to Add and sections to Remove
-        $sectionsToAdd = array_diff($serializedSections, $infoSections["sections"]);
-        $sectionsToRemove = array_diff($infoSections["sections"], $serializedSections);
+        $sectionsToAdd = array_diff($serializedSectionsFromXML, $infoSections["sections"]);
+        $sectionsToRemove = array_diff($infoSections["sections"], $serializedSectionsFromXML);
 
         $classhook = LIBSERVERFUSIONINVENTORY_HOOKS_CLASSNAME;
+
+        //updated section: process
+        if($sectionsToRemove && $sectionsToAdd)
+        {
+            $datasToUpdate = array();
+            $existUpdate = 0;
+            foreach($sectionsToRemove as $sectionId => $serializedSectionToRemove)
+            {
+                $sectionName=substr($infoSections["sections"][$sectionId], strpos($infoSections["sections"][$sectionId], '}')+1);
+                if(in_array($sectionName, $this->_configs["sections"]))
+                {
+                    foreach($sectionsToAdd as $arrayId => $serializedSectionToAdd)
+                    {
+                        //check if we have the same section Name for an sectionToRemove and an sectionToAdd
+                        if($xmlSections[$arrayId]['sectionName'] == $sectionName)
+                        {
+                            //Then we update this section
+                            $infoSections["sections"][$sectionId] = $serializedSectionToAdd;
+
+                            //Delete this section from sectionToRemove and sectionToAdd
+                            unset($sectionsToRemove[$sectionId]);
+                            unset($sectionsToAdd[$arrayId]);
+
+                            array_push($datasToUpdate, array(
+                            "sectionId"=>$sectionId,
+                            "dataSection"=>$xmlSections[$arrayId]['sectionData']));
+
+                            $existUpdate++;
+
+                            break;
+                        }
+                    }
+                }
+            }
+            if($existUpdate)
+            {
+                call_user_func(array($classhook,"updateSections"),
+                           $datasToUpdate,
+                           $infoSections["externalId"]);
+                $log->notifyDebugMessage($existUpdate." section(s) modified");
+            }
+        }
+
         if ($sectionsToRemove)
         {
-            $sectionsId = array();
-
+            $sectionsIdToRemove = array();
             foreach($sectionsToRemove as $sectionId => $serializedSection)
             {
                 unset($infoSections["sections"][$sectionId]);
-                array_push($sectionsId, $sectionId);
+                array_push($sectionsIdToRemove, $sectionId);
             }
 
             call_user_func(array($classhook,"removeSections"),
-                           $sectionsId,
+                           $sectionsIdToRemove,
                            $infoSections["externalId"]);
-
             $log->notifyDebugMessage(count($sectionsToRemove)." section(s) removed");
         }
         if ($sectionsToAdd)
         {
-            $data = array();
+            $datasToAdd = array();
 
             //format data to send to hook createSection
             foreach($sectionsToAdd as $arrayId => $serializedSection)
             {
-                array_push($data, array(
+                array_push($datasToAdd, array(
                 "sectionName"=>$xmlSections[$arrayId]['sectionName'],
                 "dataSection"=>$xmlSections[$arrayId]['sectionData']));
-
             }
 
             $sectionsId = call_user_func(array($classhook,"addSections"),
-                                         $data,
+                                         $datasToAdd,
                                          $infoSections["externalId"]);
-
             $log->notifyDebugMessage(count($sectionsToAdd)." section(s) added");
 
             $infoSectionsId = array();
@@ -400,27 +439,25 @@ INFOCONTENT;
             $infoSections["sections"] = array_combine($allSectionsId, $infoSections["sections"]);
         }
 
-        if ($sectionsToAdd or $sectionsToRemove)
+        /* Complete info file */
+        ob_start();
+        foreach($infoSections["sections"] as $key => $serializedSection)
         {
-            ob_start();
-            foreach($infoSections["sections"] as $key => $serializedSection)
-            {
-                echo "\t".$key."<<=>>".$serializedSection."
+            echo "\t".$key."<<=>>".$serializedSection."
 ";
-            }
-            $serializedSections = ob_get_contents();
-            ob_end_clean();
-            $externalId=$infoSections["externalId"];
+        }
+        $serializedSections = ob_get_contents();
+        ob_end_clean();
+        $externalId=$infoSections["externalId"];
 
-            $data = <<<INFOCONTENT
+        $data = <<<INFOCONTENT
 $externalId
 $serializedSections
 INFOCONTENT;
 
-            $infoPath = $this->_getInfoPathDSN($internalId);
+        $infoPath = $this->_getInfoPathDSN($internalId);
 
-            file_put_contents($infoPath."/infos.file", $data);
-        }
+        file_put_contents($infoPath."/infos.file", $data);
     }
 }
 ?>

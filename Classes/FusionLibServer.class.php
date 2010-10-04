@@ -90,10 +90,20 @@ class FusionLibServer
     public function start()
     {
         $log = new Logger();
+
         $log->notifyDebugMessage("----- FUSION SERVER START -----");
 
        //$simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"],'SimpleXMLElement', LIBXML_NOCDATA));
-        $simpleXMLObj = simplexml_load_file(dirname(__FILE__) ."/../data/aofr.ocs");
+
+        /* Test file */
+        if (isset($_SERVER['argv'][1]) && is_string($_SERVER['argv'][1]))
+        {
+            $fileToTest = $_SERVER['argv'][1];
+        } else {
+            $fileToTest = "aofr.ocs";
+        }
+        $simpleXMLObj = simplexml_load_file(dirname(__FILE__) ."/../data/$fileToTest");
+        /* END: Test file */
 
         if(!$simpleXMLObj)
         {

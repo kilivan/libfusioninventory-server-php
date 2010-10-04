@@ -87,42 +87,85 @@ class FusionLibServer
         }
     }
 
+    /**
+    * Retrieve XML datas from an agent or from path (archived files (ZIP only) or an XML file)
+    * @return array SimpleXMLElements $simpleXMLObjArray
+    */
+    private function _importXMLObjArray()
+    {
+        $simpleXMLObjArray = array();
+        if(isset($GLOBALS["HTTP_RAW_POST_DATA"]))
+        {
+            //then retrieve datas from agent
+            $simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"],'SimpleXMLElement', LIBXML_NOCDATA));
+            array_push($simpleXMLObjArray, $simpleXMLObj);
+        } else if (isset($_SERVER['argv'][1]))
+        {
+            //then retrieve datas from path specify by user
+            $pathFile = dirname(__FILE__) ."/../".$_SERVER['argv'][1];
+            if(!file_exists($pathFile))
+            {
+                throw new MyException ("The file on this path: $pathFile, doesn't exist");
+            }
+            $file_mime = mime_content_type($pathFile);
+
+            $mime_compress_types = array('application/zip');
+
+            if(in_array($file_mime, $mime_compress_types))
+            {
+                //uncompress the file(s)
+                $zip = zip_open($pathFile);
+                if ($zip)
+                {
+                    while ($zip_entry = zip_read($zip)) //for each file
+                    {
+                        $str = zip_entry_read($zip_entry, 90000000);
+                        $simpleXMLObj = simplexml_load_string($str);
+                        array_push($simpleXMLObjArray, $simpleXMLObj);
+                    }
+                }
+            } else if($file_mime == 'application/xml')
+            {
+                $simpleXMLObj = simplexml_load_file($pathFile);
+                array_push($simpleXMLObjArray, $simpleXMLObj);
+            }
+        }
+
+        if(empty($simpleXMLObjArray))
+        {
+            //$simpleXMLObj = simplexml_load_file(dirname(__FILE__) ."/../data/aofr.ocs");
+            throw new MyException ("Can't retrieve data from xml data sent by agent or path specify by user on CLI");
+        }
+
+        return $simpleXMLObjArray;
+    }
+
+
     public function start()
     {
         $log = new Logger();
 
         $log->notifyDebugMessage("----- FUSION SERVER START -----");
 
-       //$simpleXMLObj = simplexml_load_string(@gzuncompress($GLOBALS["HTTP_RAW_POST_DATA"],'SimpleXMLElement', LIBXML_NOCDATA));
+        $simpleXMLObjArray = $this->_importXMLObjArray();
 
-        /* Test file */
-        if (isset($_SERVER['argv'][1]) && is_string($_SERVER['argv'][1]))
+        foreach($simpleXMLObjArray as $simpleXMLObj)
         {
-            $fileToTest = $_SERVER['argv'][1];
-        } else {
-            $fileToTest = "aofr.ocs";
-        }
-        $simpleXMLObj = simplexml_load_file(dirname(__FILE__) ."/../data/$fileToTest");
-        /* END: Test file */
-
-        if(!$simpleXMLObj)
-        {
-            throw new MyException ("Can't retrieve data from xml data sent by agent.");
-        }
-        if($simpleXMLObj->QUERY == "PROLOG")
-        {
-            $xmlResponse = $this->_getXMLResponse($this->_actionsConfigs);
-            echo $xmlResponse;
-        }
-        else
-        {
-            foreach ($this->_actionsConfigs as $actionName => $config)
+            if($simpleXMLObj->QUERY == "PROLOG")
             {
-                if ($simpleXMLObj->QUERY == strtoupper($actionName))
+                $xmlResponse = $this->_getXMLResponse($this->_actionsConfigs);
+                echo $xmlResponse;
+            }
+            else
+            {
+                foreach ($this->_actionsConfigs as $actionName => $config)
                 {
-                    $action = ActionFactory::createAction($actionName);
-                    $action->checkConfig($this->_applicationName, $config);
-                    $action->startAction($simpleXMLObj);
+                    if ($simpleXMLObj->QUERY == strtoupper($actionName))
+                    {
+                        $action = ActionFactory::createAction($actionName);
+                        $action->checkConfig($this->_applicationName, $config);
+                        $action->startAction($simpleXMLObj);
+                    }
                 }
             }
         }

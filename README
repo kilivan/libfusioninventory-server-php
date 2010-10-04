@@ -39,8 +39,13 @@ The "data/" folder is used to store the following informations :
 The "user/" folder holds all user-configurable files (config.ini, his application)
 
 TESTS:
-To test the library, specify URI Server to the agent: 
-./fusioninventory-agent --server path/to/libfusinv-server/user/main.php
+To test the library:
+-  execute library on CLI with the path of the file from "path/to/libfusinv-server/" to retrieve datas (you can specify an archive (zip only) for more files)
+    "php path/to/libfusinv-server/user/main.php path/to/file/file.ocs"
+    OR "php path/to/libfusinv-server/user/main.php path/to/file/lotOfFiles.zip"
+- Otherwise, specify URI Server to the agent:
+    "./fusioninventory-agent --server path/to/libfusinv-server/user/main.php"
+
 You can check the logs in "data/logs/fusioninventory.log".
 You can retrieve all information about the machine on an sample website: "/path/to/libfusinv-server/user/applications/MyWebSite".
 

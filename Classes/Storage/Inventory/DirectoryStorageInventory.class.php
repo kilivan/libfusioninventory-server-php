@@ -40,7 +40,7 @@ class DirectoryStorageInventory extends StorageInventory
         foreach($this->_configs["criterias"] as $criteria)
         {
 
-            if($falseCriteriaNb == $this->_configs["maxFalse"])
+            if($falseCriteriaNb >= $this->_configs["maxFalse"])
             {
                 return false;
             }
@@ -112,7 +112,7 @@ class DirectoryStorageInventory extends StorageInventory
                 }
             }
         }
-        if($falseCriteriaNb == $this->_configs["maxFalse"])
+        if($falseCriteriaNb >= $this->_configs["maxFalse"])
         {
             return false;
         }

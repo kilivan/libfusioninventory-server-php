@@ -334,6 +334,7 @@ INFOCONTENT;
         $infoSections = $this->_getInfoSections($internalId);
         // Retrieve all sections from xml file
         $serializedSectionsFromXML = array();
+
         foreach($xmlSections as $xmlSection)
         {
             array_push($serializedSectionsFromXML, $xmlSection["sectionDatawName"]);
@@ -360,19 +361,140 @@ INFOCONTENT;
                         //check if we have the same section Name for an sectionToRemove and an sectionToAdd
                         if($xmlSections[$arrayId]['sectionName'] == $sectionName)
                         {
-                            //Then we update this section
-                            $infoSections["sections"][$sectionId] = $serializedSectionToAdd;
+                            //Finally, we have to determine if it's an update or not
+                            $boolUpdate = false;
+                            $arrSectionToAdd = unserialize($serializedSectionToAdd);
+                            $arrSectionToRemove = unserialize($serializedSectionToRemove);
 
-                            //Delete this section from sectionToRemove and sectionToAdd
-                            unset($sectionsToRemove[$sectionId]);
-                            unset($sectionsToAdd[$arrayId]);
+                            //TODO: Traiter les notices sur les indices de tableau qui n'existent pas.
+                            switch($sectionName)
+                            {
+                                case "DRIVES":
+                                    if($arrSectionToAdd["SERIAL"] == $arrSectionToRemove["SERIAL"] OR 
+                                        $arrSectionToAdd["NAME"] == $arrSectionToRemove["NAME"] OR
+                                        $arrSectionToAdd["VOLUMN"] == $arrSectionToRemove["VOLUMN"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "SOFTWARES":
+                                    if($arrSectionToAdd["GUID"] == $arrSectionToRemove["GUID"] OR $arrSectionToAdd["NAME"] == $arrSectionToRemove["NAME"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "CONTROLLERS":
+                                    if($arrSectionToAdd["PCIID"] == $arrSectionToRemove["PCIID"] AND $arrSectionToAdd["PCISLOT"] == $arrSectionToRemove["PCISLOT"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "ENVS":
+                                    if($arrSectionToAdd["NAME"] == $arrSectionToRemove["NAME"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "INPUTS":
+                                    if($arrSectionToAdd["CAPTION"] == $arrSectionToRemove["CAPTION"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "MEMORIES":
+                                    if($arrSectionToAdd["SERIALNUMBER"] == $arrSectionToRemove["SERIALNUMBER"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "MONITORS":
+                                    if($arrSectionToAdd["DESCRIPTION"] == $arrSectionToRemove["DESCRIPTION"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "NETWORKS":
+                                    if($arrSectionToAdd["MACADDR"] == $arrSectionToRemove["MACADDR"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "PORTS":
+                                    if($arrSectionToAdd["CAPTION"] == $arrSectionToRemove["CAPTION"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "PRINTERS":
+                                    if($arrSectionToAdd["DESCRIPTION"] == $arrSectionToRemove["DESCRIPTION"] OR $arrSectionToAdd["PORT"] == $arrSectionToRemove["PORT"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "PROCESSES":
+                                    if($arrSectionToAdd["STARTED"] == $arrSectionToRemove["STARTED"] AND $arrSectionToAdd["PID"] == $arrSectionToRemove["PID"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "SOUNDS":
+                                    if($arrSectionToAdd["NAME"] == $arrSectionToRemove["NAME"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "STORAGES":
+                                    if($arrSectionToAdd["MODEL"] == $arrSectionToRemove["MODEL"] OR $arrSectionToAdd["SERIALNUMBER"] == $arrSectionToRemove["SERIALNUMBER"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "USERS":
+                                    if($arrSectionToAdd["LOGIN"] == $arrSectionToRemove["LOGIN"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "VIDEOS":
+                                    if($arrSectionToAdd["NAME"] == $arrSectionToRemove["NAME"])
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                case "USBDEVICES":
+                                    if($arrSectionToAdd["SERIAL"] == $arrSectionToRemove["SERIAL"] OR 
+                                        (   $arrSectionToAdd["CLASS"] == $arrSectionToRemove["CLASS"] AND 
+                                            $arrSectionToAdd["PRODUCTID"] == $arrSectionToRemove["PRODUCTID"] AND 
+                                            $arrSectionToAdd["SUBCLASS"] == $arrSectionToRemove["SUBCLASS"] AND 
+                                            $arrSectionToAdd["VENDORID"] == $arrSectionToRemove["VENDORID"]
+                                        ))
+                                    {
+                                        $boolUpdate = true;
+                                    }
+                                break;
+                                default:
+                                break;
+                            }
 
-                            array_push($datasToUpdate, array(
-                            "sectionId"=>$sectionId,
-                            "dataSection"=>$xmlSections[$arrayId]['sectionData']));
+                            if($boolUpdate)
+                            {
+                                //Then we update this section
+                                $infoSections["sections"][$sectionId] = $serializedSectionToAdd;
 
-                            $existUpdate++;
+                                //Delete this section from sectionToRemove and sectionToAdd
+                                unset($sectionsToRemove[$sectionId]);
+                                unset($sectionsToAdd[$arrayId]);
 
+                                array_push($datasToUpdate, array(
+                                "sectionId"=>$sectionId,
+                                "dataSection"=>$xmlSections[$arrayId]['sectionData']));
+
+                                $existUpdate++;
+                            } else {
+                                //push element onto the end of array, to allow update transposition 
+                                array_push($sectionsToAdd, $sectionsToAdd[$arrayId]);
+                                unset($sectionsToAdd[$arrayId]);
+                            }
                             break;
                         }
                     }

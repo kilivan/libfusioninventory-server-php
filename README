@@ -19,6 +19,9 @@ You need to give write permission to the apache process on the following folders
 "/path/to/libfusinv-server/data/"
 "/path/to/libfusinv-server/user/"
 
+Populate the IDs database
+/path/to/FusionLib/Classes/Storage/Inventory/SourceDataFilter/FilesToTreeFolder.php
+
 Test your installation (see TESTS)
 
 CONFIGURATION:

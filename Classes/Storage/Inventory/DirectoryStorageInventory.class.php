@@ -1,7 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/StorageInventory.class.php';
-define("LIBSERVERFUSIONINVENTORY_STORAGELOCATION",dirname(__FILE__)."/../../../".$configs['storageLocation']);
-
+if (!defined('LIBSERVERFUSIONINVENTORY_STORAGELOCATION')) {
+   define("LIBSERVERFUSIONINVENTORY_STORAGELOCATION",dirname(__FILE__)."/../../../".$configs['storageLocation']);
+}
 class DirectoryStorageInventory extends StorageInventory
 {
 
@@ -39,7 +40,7 @@ class DirectoryStorageInventory extends StorageInventory
         foreach($this->_configs["criterias"] as $criteria)
         {
 
-            if($falseCriteriaNb == $this->_configs["maxFalse"])
+            if($falseCriteriaNb >= $this->_configs["maxFalse"])
             {
                 return false;
             }
@@ -111,7 +112,7 @@ class DirectoryStorageInventory extends StorageInventory
                 }
             }
         }
-        if($falseCriteriaNb == $this->_configs["maxFalse"])
+        if($falseCriteriaNb >= $this->_configs["maxFalse"])
         {
             return false;
         }
@@ -187,7 +188,7 @@ INFOCONTENT;
                     case "storagesSerial":
                     foreach($criteriaValue as $storages)
                     {
-                        if ($storages->TYPE=="disk")
+                        if (($storages->TYPE=="disk") AND (isset($storages->SERIAL)))
                         {
                             $criteriaPath = $this->_getCriteriaDSN($criteriaName, $storages->SERIAL);
 
@@ -255,7 +256,7 @@ INFOCONTENT;
     */
     private function _getCriteriaDSN($criteriaName, $criteriaValue)
     {
-        $dsn = sprintf('%s/%s/%s',
+        $dsn = sprintf('%s/%s/%s/%s/%s',
         LIBSERVERFUSIONINVENTORY_STORAGELOCATION,
         "criterias",
         $criteriaName,
@@ -300,9 +301,8 @@ INFOCONTENT;
         $infoSections["sections"] = array();
         $infoSections["sectionsToModify"] = array();
 
-        while(!feof($infoFileHandler))
+        while ( ($buffer = fgets($infoFileHandler, 4096)) !== false )
         {
-            $buffer = fgets($infoFileHandler, 4096);
 
             $stack = array();
             if (preg_match("/^\t(.+)/i", $buffer, $stack))
@@ -316,7 +316,7 @@ INFOCONTENT;
                 $infoSections["externalId"]= trim($buffer);
             }
         }
-
+        fclose($infoFileHandler);
         return $infoSections;
 
     }
@@ -562,14 +562,12 @@ INFOCONTENT;
         }
 
         /* Complete info file */
-        ob_start();
+        $serializedSections = "";
         foreach($infoSections["sections"] as $key => $serializedSection)
         {
-            echo "\t".$key."<<=>>".$serializedSection."
+            $serializedSections .= "\t".$key."<<=>>".$serializedSection."
 ";
         }
-        $serializedSections = ob_get_contents();
-        ob_end_clean();
         $externalId=$infoSections["externalId"];
 
         $data = <<<INFOCONTENT

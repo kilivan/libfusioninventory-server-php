@@ -349,6 +349,7 @@ INFOCONTENT;
         //updated section: process
         if($sectionsToRemove && $sectionsToAdd)
         {
+            $sectionsToAddTmp = array();
             $datasToUpdate = array();
             $existUpdate = 0;
             foreach($sectionsToRemove as $sectionId => $serializedSectionToRemove)
@@ -491,8 +492,8 @@ INFOCONTENT;
 
                                 $existUpdate++;
                             } else {
-                                //push element onto the end of array, to allow update transposition 
-                                array_push($sectionsToAdd, $sectionsToAdd[$arrayId]);
+                                //push element into an temporary array, to allow update transposition
+                                $sectionsToAddTmp[$arrayId] = $sectionsToAdd[$arrayId];
                                 unset($sectionsToAdd[$arrayId]);
                             }
                             break;
@@ -506,6 +507,16 @@ INFOCONTENT;
                            $datasToUpdate,
                            $infoSections["externalId"]);
                 $log->notifyDebugMessage($existUpdate." section(s) modified");
+            }
+
+            if(!empty($sectionsToAddTmp))
+            {
+                //Retrieve removed data in sectionsToAdd
+                foreach($sectionsToAddTmp as $k => $v)
+                {
+                    $sectionsToAdd[$k] = $v;
+                }
+                ksort($sectionsToAdd);
             }
         }
 

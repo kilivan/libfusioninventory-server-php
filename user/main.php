@@ -6,6 +6,7 @@ require_once dirname(__FILE__) ."/../Classes/Logger.class.php";
 
 $configs = parse_ini_file(dirname(__FILE__) ."/configs.ini", true);
 
+
 define("LIBSERVERFUSIONINVENTORY_LOG_DIR",dirname(__FILE__)."/../data/logs");
 define("LIBSERVERFUSIONINVENTORY_LOG_FILE",dirname(__FILE__)."/../data/logs/fusioninventory.log");
 define("LIBSERVERFUSIONINVENTORY_HOOKS_CLASSNAME","Hooks");
